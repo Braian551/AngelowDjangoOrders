@@ -1,0 +1,32 @@
+{% load static %}
+<!--#region encabezados-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django✨</title>
+    <link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet">
+
+</head>
+<!--#endregion-->
+<body>
+    {% include 'navbar.html'%}
+    <div class="container mt-4">
+        <br>
+
+        {%if messages%} {%for messages in messages%}
+        <div class=" alert alert-warning alert-dismissible" role="alert">
+                <strong>{{messages}}</strong>  Deberias revisar algunos de los campos , esta equivocado
+                <button type="button" class ="btn-close" data-bs-dismiss="alert" arial-label ="Close">
+                </button>
+            </div>
+            {%endfor%}
+        {%endif%}
+        {% block content %}
+        {% endblock %}
+    </div>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}" ></script>
+</body>
+</html>

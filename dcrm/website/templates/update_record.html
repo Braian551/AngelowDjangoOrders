@@ -1,0 +1,17 @@
+{%extends 'base.html'%}
+{% block content %}
+
+
+<div class="container my-5">
+    <h1 class="display-4 fw-bold">Actualizar registro </h1>
+    <br/>
+    <form method="post" action="">
+        {% csrf_token %}
+
+
+        {{ form.as_p }}
+        <br/>
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+</div>
+{%endblock%}

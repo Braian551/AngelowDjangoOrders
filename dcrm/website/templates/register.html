@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<h1>Registro nuevo usuario ✍🏼</h1>
+<br />
+
+
+<form method="post" action="">
+    {% csrf_token %}
+   
+    {% if form.errors %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Error de registro:</strong> por favor revise los datos ingresados.
+        <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+
+    {{ form.as_p }}
+
+
+    <button type="submit" class="btn btn-primary">
+        Registrar
+    </button>
+</form>
+
+
+{% endblock %}

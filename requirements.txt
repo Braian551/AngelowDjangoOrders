@@ -1,0 +1,9 @@
+# Framework principal compatible con Python 3.14 y MariaDB/MySQL
+Django==5.2.8
+
+# Conector de base de datos para MariaDB/MySQL (requiere compilador C)
+PyMySQL==1.1.2
+
+# Utilidades opcionales pero recomendadas
+python-dotenv==1.0.1
+sqlparse==0.4.4

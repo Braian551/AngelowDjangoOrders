@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+#para crear un entorno virtual en python3:
+venv/ 
+env/
+.venv/
+ENV/
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Archivos media subidos por usuarios
+media/
+
+# Archivos estáticos generados
+staticfiles/
+static_collected/
+
+# Migraciones opcionalmente NO se ignoran
+# Normalmente SÍ debes subir migrations/
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# IDEs / Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*.agents/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Testing / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+# Build / paquetes
+build/
+dist/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Docker
+*.pid
