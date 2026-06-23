@@ -14,11 +14,18 @@ def home(request):
 def login_user(request):
     """Procesa el inicio de sesión del usuario."""
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+
+        # Validar datos mínimos evita autenticar envíos vacíos o incompletos.
+        if not username or not password:
+            messages.error(request, "debes ingresar usuario y contraseña")
+            return redirect('home')
+
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
+            # Crear la sesión aquí permite que Django recuerde al usuario entre requests.
             login(request, user)
             messages.success(request, "ingresado exitosamente")
             return redirect('home')
