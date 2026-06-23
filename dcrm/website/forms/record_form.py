@@ -1,4 +1,4 @@
-# Formulario para crear o actualizar un cliente.
+#
 
 from django import forms
 
