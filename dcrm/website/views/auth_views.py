@@ -1,18 +1,24 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from website.forms import SignUpForm
 from .helpers import get_login_redirect_url, paginate_records
 
 
+@never_cache
+@ensure_csrf_cookie
 def home(request):
     """Renderiza la página principal con registros paginados."""
     # La misma vista muestra login o dashboard según el estado de autenticación.
+    # ensure_csrf_cookie entrega un token fresco para el formulario de inicio de sesión.
     records = paginate_records(request)
     return render(request, 'home.html', {'records': records})
 
 
+@never_cache
 def login_user(request):
     """Procesa el inicio de sesión del usuario."""
     if request.method == 'POST':
@@ -39,6 +45,7 @@ def login_user(request):
     return redirect('home')
 
 
+@never_cache
 def logout_user(request):
     """Cierra la sesión actual y vuelve a la página principal."""
     logout(request)
@@ -46,6 +53,8 @@ def logout_user(request):
     return redirect('home')
 
 
+@never_cache
+@ensure_csrf_cookie
 def register_user(request):
     """Registra un usuario nuevo y lo autentica automáticamente."""
     if request.method == 'POST':
@@ -65,3 +74,13 @@ def register_user(request):
         form = SignUpForm()
 
     return render(request, 'register.html', {'form': form})
+
+
+def csrf_failure(request, reason=''):
+    """Redirige los fallos CSRF a un mensaje entendible para el usuario."""
+    # Django rota el token al iniciar sesión; si se reenvía un formulario viejo aparece 403.
+    messages.error(
+        request,
+        "El formulario expiró o pertenece a una sesión anterior. Recarga la página e inténtalo de nuevo.",
+    )
+    return redirect('home')

@@ -2,7 +2,7 @@
 
 from django.conf import settings # Importa las variables de entorno del proyecto.
 from django.contrib.auth import get_user_model # Importa el modelo de usuario.
-from django.test import TestCase # Importa las clases de pruebas.
+from django.test import Client, TestCase # Importa las clases de pruebas.
 from django.urls import reverse # Importa las funciones de URL.
 
 
@@ -25,6 +25,10 @@ class SecuritySettingsTests(TestCase): # esta clase se ejecuta antes de las prue
         # Si estas cookies se marcan como seguras en HTTP local, el login no persiste.
         self.assertFalse(settings.SESSION_COOKIE_SECURE)
         self.assertFalse(settings.CSRF_COOKIE_SECURE)
+
+    def test_project_uses_custom_csrf_failure_view(self):
+        # El error CSRF debe volver a la app con mensaje claro, no mostrar el 403 técnico.
+        self.assertEqual(settings.CSRF_FAILURE_VIEW, 'website.views.csrf_failure')
 
 
 class LoginFlowTests(TestCase): # Esta clase se ejecuta antes de las pruebas
@@ -62,6 +66,17 @@ class LoginFlowTests(TestCase): # Esta clase se ejecuta antes de las pruebas
 
         self.assertRedirects(response, reverse('orders'))
         self.assertEqual(str(admin_user.pk), self.client.session.get('_auth_user_id'))
+
+    def test_invalid_csrf_post_redirects_to_home(self):
+        # Simula el caso del navegador enviando un formulario sin token válido.
+        csrf_client = Client(enforce_csrf_checks=True)
+
+        response = csrf_client.post(
+            reverse('login'),
+            {'username': 'Braianprueba', 'password': 'prueba1234'},
+        )
+
+        self.assertRedirects(response, reverse('home'), fetch_redirect_response=False)
 
 
 class OrderRoleAccessTests(TestCase):

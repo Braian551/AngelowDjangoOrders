@@ -109,6 +109,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # devuelve y la sesión aparenta perderse justo después del login.
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
+# Si el token CSRF falla, mostramos un mensaje claro en la app en vez del 403 técnico.
+CSRF_FAILURE_VIEW = 'website.views.csrf_failure'
 SECURE_SSL_REDIRECT = not DEBUG
 SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG

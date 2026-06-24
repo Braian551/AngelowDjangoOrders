@@ -1,6 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from website.forms import OrderForm, OrderItemFormSet
 from website.models import Order, OrderView, StockReservation
@@ -43,6 +45,9 @@ def list_orders(request):
 
 
 # Patrón GoF estructural: Decorator aplicado a la creación de pedidos.
+# ensure_csrf_cookie y never_cache evitan reenviar formularios viejos con tokens vencidos.
+@never_cache
+@ensure_csrf_cookie
 @login_required(login_url='home')
 @user_passes_test(is_admin_user, login_url='home')
 def create_order(request):
@@ -82,6 +87,9 @@ def create_order(request):
 
 
 # Patrón GoF estructural: Decorator aplicado a la edición de pedidos.
+# En formularios POST conviene no cachear la página porque Django puede rotar el token CSRF.
+@never_cache
+@ensure_csrf_cookie
 @login_required(login_url='home')
 @user_passes_test(is_admin_user, login_url='home')
 def update_order(request, order_id):
@@ -123,6 +131,9 @@ def update_order(request, order_id):
 
 
 # Patrón GoF estructural: Decorator aplicado a la eliminación de pedidos.
+# La confirmación también es un formulario POST, por eso se protege con token fresco.
+@never_cache
+@ensure_csrf_cookie
 @login_required(login_url='home')
 @user_passes_test(is_admin_user, login_url='home')
 def delete_order(request, order_id):
