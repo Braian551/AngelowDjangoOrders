@@ -1,48 +1,53 @@
 {% load static %}
 
-<!-- #region encabezados -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <!-- Permite que la página sea responsive en celulares y pantallas pequeñas. -->
+    <!-- Permite que la página se adapte a celulares, tablets y pantallas grandes. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Django✨</title>
+    <title>Angelow</title>
 
-    <!-- Bootstrap local cargado desde la carpeta static. -->
+    <!-- Bootstrap local cargado desde static/css/bootstrap.min.css -->
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    {# 
+        Bloque para que cada plantilla hija pueda cargar su propio CSS.
+
+        Ejemplo:
+        home.html puede cargar home.css sin meter estilos dentro del HTML.
+    #}
+    {% block extra_css %}
+    {% endblock %}
 </head>
-<!-- #endregion -->
 
 <body>
-    {# Navbar compartida por todas las pantallas del proyecto. #}
+    {# Navbar compartida para todo el sitio. #}
     {% include 'navbar.html' %}
 
-    <div class="container mt-4">
-        <br>
+    {# 
+        Contenedor general de mensajes de Django.
 
-        <!-- {# 
-            Mensajes flash enviados desde las vistas con django.contrib.messages.
+        Estos mensajes vienen desde las vistas, por ejemplo:
+        messages.success(request, 'Registro exitoso.')
+        messages.error(request, 'Credenciales inválidas.')
+        messages.warning(request, 'Revisa los campos.')
+        messages.info(request, 'Información importante.')
 
-            Ejemplos en Python:
-            messages.success(request, 'Registro exitoso.')
-            messages.error(request, 'Credenciales inválidas.')
-            messages.warning(request, 'Revisa los campos.')
-            messages.info(request, 'Información importante.')
-
-            Bootstrap usa:
-            success → verde
-            danger  → rojo
-            warning → amarillo
-            info    → azul
-        #} -->
-        {% if messages %}
+        Aquí los mostramos con colores de Bootstrap:
+        success → verde
+        error   → rojo usando alert-danger
+        warning → amarillo
+        info    → azul
+    #}
+    {% if messages %}
+        <div class="app-messages">
             {% for message in messages %}
 
-                {# Convierte el tag "error" de Django en "danger" de Bootstrap. #}
+                {# Django usa "error", pero Bootstrap usa "danger". #}
                 {% if message.tags == 'error' %}
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <strong>Error:</strong> {{ message }}
@@ -75,14 +80,30 @@
                 {% endif %}
 
             {% endfor %}
-        {% endif %}
+        </div>
+    {% endif %}
 
-        {# Cada plantilla hija inyecta aquí su contenido principal. #}
-        {% block content %}
-        {% endblock %}
-    </div>
+    {# 
+        Aquí se inyecta el contenido principal de cada página.
 
-    <!-- JavaScript de Bootstrap para que funcionen botones como cerrar alertas. -->
+        Por ejemplo:
+        - home.html coloca su login o dashboard aquí.
+        - register.html coloca su formulario aquí.
+        - order_list.html coloca su tabla de pedidos aquí.
+    #}
+    {% block content %}
+    {% endblock %}
+
+    <!-- JavaScript de Bootstrap. Necesario para cerrar alertas, modales, dropdowns, etc. -->
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+    {# 
+        Bloque para que cada plantilla hija pueda cargar su propio JavaScript.
+
+        Ejemplo:
+        home.html carga home.js.
+    #}
+    {% block extra_js %}
+    {% endblock %}
 </body>
 </html>

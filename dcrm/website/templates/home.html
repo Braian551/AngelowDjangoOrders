@@ -1,337 +1,326 @@
 {% extends 'base.html' %}
+{% load static %}
+<!-- 
+{# 
+    Cargamos solo el CSS de esta página.
+    Así evitamos poner <style> dentro del HTML.
+#} -->
+{% block extra_css %}
+<link href="{% static 'css/home.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
 
+<section class="home-page">
 
-<!-- Mensajes de Django -->
-{% if messages %}
-<div class="crm-messages">
-    {% for message in messages %}
-    <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
+    {#
+    Si el usuario ya inició sesión, mostramos el panel con registros.
+    Si no ha iniciado sesión, mostramos el formulario de login.
+    #}
+    {% if user.is_authenticated %}
 
-<main class="crm-page">
-    <div class="crm-container">
+    <!-- =========================
+             PANEL DE USUARIO LOGUEADO
+             ========================= -->
+    <div class="dashboard-layout">
 
-        {% if user.is_authenticated %}
+        <!-- Contenido principal del dashboard -->
+        <section class="dashboard-content">
 
-        <!-- Vista usuario autenticado -->
-        <section class="dashboard-shell">
+            <!-- Encabezado del panel -->
+            <div class="dashboard-header">
+                <div>
+                    <span class="section-kicker">Panel principal</span>
 
-            <div class="dashboard-main">
-                <div class="dashboard-hero">
-                    <div class="hero-content">
-                        <div>
-                            <div class="hero-badge">
-                                <span>🚀</span>
-                                <span>Django CMR</span>
-                            </div>
-
-                            <h1 class="dashboard-title">Registros del sistema</h1>
-
-                            <p class="dashboard-subtitle">
-                                Administra y visualiza la información de los usuarios registrados de una forma más clara,
-                                moderna y organizada.
-                            </p>
-                        </div>
-
-                        <div class="hero-icon">
-                            👥
-                        </div>
-                    </div>
-
-                    <div class="stats-row">
-                        <div class="stat-card">
-                            <div class="stat-label">Usuarios registrados</div>
-                            <div class="stat-value">{{ records.paginator.count }}</div>
-                        </div>
-
-                        <div class="stat-card">
-                            <div class="stat-label">Sesión activa</div>
-                            <div class="stat-value">Sí</div>
-                        </div>
-
-                        <div class="stat-card">
-                            <div class="stat-label">Estado</div>
-                            <div class="stat-value">Online</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="records-section">
-                    <div class="records-header">
-                        <div>
-                            <h2>Listado de registros</h2>
-                            <p>Información general de los usuarios almacenados en el sistema.</p>
-                        </div>
-
-                        <span class="records-pill">
-                            📋 {{ records.paginator.count }} registros
-                        </span>
-                    </div>
-
-                    <div class="records-table-wrapper">
-                        <table class="records-table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Nombre</th>
-                                    <th scope="col">Apellido</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Teléfono</th>
-                                    <th scope="col">Dirección</th>
-                                    <th scope="col">Ciudad</th>
-                                    <th scope="col">Estado</th>
-                                    <th scope="col">Código postal</th>
-                                    <th scope="col">Fecha de creación</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {% if records %}
-                                    {% for record in records %}
-                                    <tr>
-                                        <th scope="row">
-                                            <span class="record-number">{{ records.start_index|add:forloop.counter0 }}</span>
-                                        </th>
-                                        <td data-label="Nombre">{{ record.first_name }}</td>
-                                        <td data-label="Apellido">{{ record.last_name }}</td>
-                                        <td data-label="Email" class="email-cell">{{ record.email }}</td>
-                                        <td data-label="Teléfono">{{ record.phone }}</td>
-                                        <td data-label="Dirección">{{ record.address }}</td>
-                                        <td data-label="Ciudad">{{ record.city }}</td>
-                                        <td data-label="Estado">{{ record.state }}</td>
-                                        <td data-label="Código postal">{{ record.zip_code }}</td>
-                                        <td data-label="Fecha de creación">{{ record.created_at }}</td>
-                                        <td data-label="id"><a href="{% url 'customer_record' record.id %}">{{ record.id }}</a></td>
-                                    </tr>
-                                    {% endfor %}
-                                {% else %}
-                                    <tr>
-                                        <td colspan="11" class="records-empty">
-                                            No hay registros disponibles.
-                                        </td>
-                                    </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
-                        <!-- paginacion -->
-                         <!-- Paginación -->
-    <!-- Paginación estilizada y responsive con Bootstrap -->
-{% if records.paginator.num_pages > 1 %}
-<div class="container mt-5">
-  <div class="row">
-    <div class="col text-center">
-      <nav aria-label="Paginación de registros">
-        <ul class="pagination pagination-lg justify-content-center flex-wrap">
-
-
-          {% if records.has_previous %}
-            <li class="page-item">
-              <a class="page-link bg-dark text-white" href="?page=1" title="Primera página">&laquo;</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link bg-dark text-white" href="?page={{ records.previous_page_number }}" title="Anterior">&lsaquo;</a>
-            </li>
-          {% else %}
-            <li class="page-item disabled">
-              <span class="page-link bg-secondary text-white">&laquo;</span>
-            </li>
-            <li class="page-item disabled">
-              <span class="page-link bg-secondary text-white">&lsaquo;</span>
-            </li>
-          {% endif %}
-
-
-          {% for num in records.paginator.page_range %}
-            {% if num >= records.number|add:'-2' and num <= records.number|add:'2' %}
-              {% if records.number == num %}
-                <li class="page-item active">
-                  <span class="page-link">{{ num }}</span>
-                </li>
-              {% else %}
-                <li class="page-item">
-                  <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                </li>
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-
-
-          {% if records.has_next %}
-            <li class="page-item">
-              <a class="page-link bg-dark text-white" href="?page={{ records.next_page_number }}" title="Siguiente">&rsaquo;</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link bg-dark text-white" href="?page={{ records.paginator.num_pages }}" title="Última página">&raquo;</a>
-            </li>
-          {% else %}
-            <li class="page-item disabled">
-              <span class="page-link bg-secondary text-white">&rsaquo;</span>
-            </li>
-            <li class="page-item disabled">
-              <span class="page-link bg-secondary text-white">&raquo;</span>
-            </li>
-          {% endif %}
-
-
-        </ul>
-        <p class="text-muted mt-2">Página {{ records.number }} de {{ records.paginator.num_pages }}</p>
-      </nav>
-    </div>
-  </div>
-</div>
-{% endif %}
-
-                
-
-                    </div>
-                </div>
-            </div>
-
-            <aside class="profile-card">
-                <div class="profile-top">
-                    <div class="avatar">
-                        👋
-                    </div>
-
-                    <h3>Hola, {{ user.username }}</h3>
-                    <p>Bienvenido nuevamente al panel principal.</p>
-                </div>
-
-                <div class="profile-info">
-                    <div class="profile-info-item">
-                        <span>Usuario</span>
-                        <span>{{ user.username }}</span>
-                    </div>
-
-                    <div class="profile-info-item">
-                        <span>Acceso</span>
-                        <span>Autenticado</span>
-                    </div>
-
-                    <div class="profile-info-item">
-                        <span>Panel</span>
-                        <span>CMR</span>
-                    </div>
-                </div>
-
-                <a href="{% url 'logout' %}" class="logout-btn">
-                    <span>🚪</span>
-                    <span>Cerrar sesión</span>
-                </a>
-            </aside>
-
-        </section>
-
-        {% else %}
-
-        <!-- Vista usuario no autenticado -->
-        <section class="login-shell">
-
-            <div class="login-brand-card">
-                <div class="brand-content">
-                    <div class="brand-icon">
-                        🚀
-                    </div>
-
-                    <h1>Django CMR</h1>
+                    <h1>Registros del sistema</h1>
 
                     <p>
-                        Accede a tu panel para gestionar registros, usuarios y datos del sistema
-                        de forma rápida, segura y organizada.
+                        Consulta la información registrada y gestiona los datos principales del sistema.
                     </p>
                 </div>
-            </div>
 
-            <div class="login-form-card">
-                <div class="login-form-inner">
-
-                    <div class="login-form-header">
-                        <div class="small-title">
-                            🔐 Acceso seguro
-                        </div>
-
-                        <h2>Iniciar sesión</h2>
-
-                        <p>
-                            Ingresa tus credenciales para continuar al panel administrativo.
-                        </p>
-                    </div>
-
-                    <form method="POST" action="{% url 'login' %}" novalidate>
-                        {% csrf_token %}
-
-                        <div class="form-group-modern">
-                            <label for="username" class="login-form-label login-required">Usuario</label>
-
-                            <div class="input-modern">
-                                <span class="input-icon">👤</span>
-                                <input
-                                    type="text"
-                                    class="login-form-control"
-                                    name="username"
-                                    id="username"
-                                    placeholder="Ingresa tu usuario"
-                                    required
-                                >
-                            </div>
-
-                            <small class="form-help">
-                                Tu usuario se mantendrá privado y seguro.
-                            </small>
-                        </div>
-
-                        <div class="form-group-modern">
-                            <label for="password" class="login-form-label login-required">Contraseña</label>
-
-                            <div class="input-modern">
-                                <span class="input-icon">🔒</span>
-                                <input
-                                    type="password"
-                                    class="login-form-control"
-                                    id="password"
-                                    name="password"
-                                    placeholder="••••••••"
-                                    required
-                                >
-
-                                <button class="toggle-password-btn" type="button" id="togglePassword">
-                                    👁️
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="login-options">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                                <label class="form-check-label" for="remember">
-                                    Recordarme
-                                </label>
-                            </div>
-
-                            <a href="#">¿Olvidaste tu contraseña?</a>
-                        </div>
-
-                        <button type="submit" class="btn login-btn">
-                            Entrar al sistema →
-                        </button>
-                    </form>
-
+                <!-- Resumen rápido de registros -->
+                <div class="dashboard-summary">
+                    <span>{{ records.paginator.count }}</span>
+                    <small>registros</small>
                 </div>
             </div>
 
+            <!-- Tarjeta que contiene la tabla -->
+            <div class="records-card">
+
+                <div class="records-card-header">
+                    <div>
+                        <h2>Clientes registrados</h2>
+                        <p>Listado general de registros almacenados.</p>
+                    </div>
+                </div>
+
+                <!-- Tabla responsive -->
+                <div class="table-responsive">
+                    <table class="table records-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Ciudad</th>
+                                <th>Estado</th>
+                                <th>Código postal</th>
+                                <th>Fecha</th>
+                                <th>Ver</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% if records %}
+                            {% for record in records %}
+                            <tr>
+                                <!-- Número visible de fila teniendo en cuenta la paginación -->
+                                <td data-label="#">
+                                    <span class="row-number">
+                                        {{ records.start_index|add:forloop.counter0 }}
+                                    </span>
+                                </td>
+
+                                <td data-label="Nombre">{{ record.first_name }}</td>
+                                <td data-label="Apellido">{{ record.last_name }}</td>
+                                <td data-label="Email" class="text-primary fw-semibold">{{ record.email }}</td>
+
+                                {#
+                                Ojo:
+                                Según tu modelo, el campo correcto es phone_number.
+                                Si tu modelo usa otro nombre, cámbialo aquí.
+                                #}
+                                <td data-label="Teléfono">{{ record.phone_number }}</td>
+
+                                <td data-label="Ciudad">{{ record.city }}</td>
+                                <td data-label="Estado">{{ record.state }}</td>
+                                <td data-label="Código postal">{{ record.zip_code }}</td>
+                                <td data-label="Fecha">{{ record.created_at|date:"d/m/Y H:i" }}</td>
+
+                                <td data-label="Ver">
+                                    <a href="{% url 'customer_record' record.id %}"
+                                        class="btn btn-sm btn-outline-primary">
+                                        Ver
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="10" class="empty-table">
+                                    No hay registros disponibles.
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {#
+                Paginación.
+                Solo aparece si hay más de una página.
+                #}
+                {% if records.paginator.num_pages > 1 %}
+                <nav class="records-pagination" aria-label="Paginación de registros">
+                    <ul class="pagination justify-content-center flex-wrap mb-0">
+
+                        {% if records.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" title="Primera página">&laquo;</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ records.previous_page_number }}"
+                                title="Página anterior">&lsaquo;</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">&lsaquo;</span>
+                        </li>
+                        {% endif %}
+
+                        {% for num in records.paginator.page_range %}
+                        {% if num >= records.number|add:'-2' and num <= records.number|add:'2' %} {% if
+                            records.number==num %} <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if records.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ records.next_page_number }}"
+                                    title="Página siguiente">&rsaquo;</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ records.paginator.num_pages }}"
+                                    title="Última página">&raquo;</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&rsaquo;</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;</span>
+                            </li>
+                            {% endif %}
+
+                    </ul>
+
+                    <p class="pagination-status">
+                        Página {{ records.number }} de {{ records.paginator.num_pages }}
+                    </p>
+                </nav>
+                {% endif %}
+
+            </div>
         </section>
 
-        {% endif %}
+        <!-- Panel lateral del usuario -->
+        <aside class="user-panel">
+            <div class="user-avatar">
+                {{ user.username|first|upper }}
+            </div>
+
+            <h3>{{ user.username }}</h3>
+            <p>Sesión activa</p>
+
+            <div class="user-panel-info">
+                <div>
+                    <span>Rol</span>
+
+                    {#
+                    Rol básico:
+                    - Admin si es staff o superusuario.
+                    - Cliente si es usuario normal.
+                    #}
+                    {% if user.is_staff or user.is_superuser %}
+                    <strong>Admin</strong>
+                    {% else %}
+                    <strong>Cliente</strong>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <span>Estado</span>
+                    <strong>Activo</strong>
+                </div>
+            </div>
+
+            <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100">
+                Cerrar sesión
+            </a>
+        </aside>
 
     </div>
-</main>
 
+    {% else %}
 
+    <!-- =========================
+             VISTA DE LOGIN
+             ========================= -->
+    <div class="login-layout">
 
+        <!-- Bloque visual izquierdo -->
+        <section class="login-info">
+            <div class="login-brand">
+                <span class="brand-mark">A</span>
+
+                <div>
+                    <h1>Angelow</h1>
+                    <p>Panel de gestión para registros, clientes y pedidos.</p>
+                </div>
+            </div>
+
+            <div class="login-copy">
+                <span class="section-kicker">Sistema CMR</span>
+
+                <h2>Gestiona tu información desde un solo lugar.</h2>
+
+                <p>
+                    Accede de forma segura para consultar registros, revisar pedidos y administrar
+                    los datos principales del sistema.
+                </p>
+            </div>
+        </section>
+
+        <!-- Tarjeta del formulario de login -->
+        <section class="login-card">
+            <div class="login-card-inner">
+
+                <div class="login-card-header">
+                    <span class="login-badge">Acceso seguro</span>
+
+                    <h2>Iniciar sesión</h2>
+
+                    <p>Ingresa tus credenciales para continuar.</p>
+                </div>
+
+                {#
+                El formulario se envía a la ruta llamada "login".
+                Esa ruta debe existir en website/urls.py:
+                path('login/', views.login_user, name='login')
+                #}
+                <form method="POST" action="{% url 'login' %}" novalidate>
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="username">Usuario</label>
+
+                        <input type="text" name="username" id="username" class="form-control form-control-lg"
+                            placeholder="Ingresa tu usuario" autocomplete="username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+
+                        <div class="password-field">
+                            <input type="password" name="password" id="password" class="form-control form-control-lg"
+                                placeholder="Ingresa tu contraseña" autocomplete="current-password" required>
+
+                            {# Este botón muestra u oculta la contraseña usando home.js. #}
+                            <button type="button" id="togglePassword" aria-label="Mostrar contraseña">
+                                Ver
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="login-actions">
+                        <label class="remember-option">
+                            <input type="checkbox" name="remember">
+                            <span>Recordarme</span>
+                        </label>
+
+                        <a href="#">¿Olvidaste tu contraseña?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 login-submit">
+                        Entrar
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}
+
+{# Cargamos el JavaScript específico de esta página. #}
+{% block extra_js %}
+<script src="{% static 'js/home.js' %}"></script>
 {% endblock %}
