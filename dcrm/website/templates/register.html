@@ -13,7 +13,7 @@
     <!-- Layout principal de autenticación. -->
     <div class="auth-layout">
 
-        <!-- Panel visual reutilizable. -->
+        <!-- Panel visual izquierdo reutilizable. -->
         {% include 'partials/auth_brand_panel.html' with auth_kicker='Crear cuenta' auth_title='Registra un nuevo usuario en el sistema.' auth_description='Completa los datos del formulario para crear una cuenta y acceder al panel de gestión de Angelow.' %}
 
         <!-- Tarjeta del formulario de registro. -->
@@ -58,8 +58,14 @@
                         <label for="{{ form.username.id_for_label }}">Usuario</label>
                         {{ form.username }}
 
+                        <!-- 
+                            El filtro safe permite que Django renderice etiquetas HTML
+                            del help_text en lugar de mostrarlas como texto plano.
+                        -->
                         {% if form.username.help_text %}
-                            <small class="form-help">{{ form.username.help_text }}</small>
+                            <div class="form-help">
+                                {{ form.username.help_text|safe }}
+                            </div>
                         {% endif %}
                     </div>
 
@@ -68,6 +74,12 @@
                         <div class="form-group">
                             <label for="{{ form.first_name.id_for_label }}">Nombre</label>
                             {{ form.first_name }}
+
+                            {% if form.first_name.help_text %}
+                                <div class="form-help">
+                                    {{ form.first_name.help_text|safe }}
+                                </div>
+                            {% endif %}
                         </div>
                     {% endif %}
 
@@ -76,6 +88,12 @@
                         <div class="form-group">
                             <label for="{{ form.last_name.id_for_label }}">Apellido</label>
                             {{ form.last_name }}
+
+                            {% if form.last_name.help_text %}
+                                <div class="form-help">
+                                    {{ form.last_name.help_text|safe }}
+                                </div>
+                            {% endif %}
                         </div>
                     {% endif %}
 
@@ -84,6 +102,12 @@
                         <div class="form-group">
                             <label for="{{ form.email.id_for_label }}">Correo electrónico</label>
                             {{ form.email }}
+
+                            {% if form.email.help_text %}
+                                <div class="form-help">
+                                    {{ form.email.help_text|safe }}
+                                </div>
+                            {% endif %}
                         </div>
                     {% endif %}
 
@@ -94,10 +118,7 @@
                         <div class="password-field">
                             {{ form.password1 }}
 
-                            <!-- 
-                                Botón genérico.
-                                auth.js usa el id del input para mostrar u ocultar contraseña.
-                            -->
+                            <!-- Botón genérico reutilizado por auth.js. -->
                             <button
                                 type="button"
                                 data-password-toggle="{{ form.password1.id_for_label }}"
@@ -108,7 +129,9 @@
                         </div>
 
                         {% if form.password1.help_text %}
-                            <small class="form-help">{{ form.password1.help_text }}</small>
+                            <div class="form-help">
+                                {{ form.password1.help_text|safe }}
+                            </div>
                         {% endif %}
                     </div>
 
@@ -130,7 +153,9 @@
                         </div>
 
                         {% if form.password2.help_text %}
-                            <small class="form-help">{{ form.password2.help_text }}</small>
+                            <div class="form-help">
+                                {{ form.password2.help_text|safe }}
+                            </div>
                         {% endif %}
                     </div>
 

@@ -201,6 +201,32 @@
     font-weight: 700;
 }
 
+/* Texto de ayuda del formulario de registro. */
+.form-help {
+    display: block;
+    margin-top: 0.45rem;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+/* Si el help_text viene como <small>, lo normalizamos. */
+.form-help small {
+    color: inherit;
+    font-size: inherit;
+}
+
+/* Si el help_text viene como lista <ul>, le damos mejor estilo. */
+.form-help ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.1rem;
+}
+
+/* Espaciado entre reglas de contraseña. */
+.form-help li {
+    margin-bottom: 0.25rem;
+}
+
 /* Inputs escritos manualmente y también inputs renderizados por Django. */
 .auth-card input[type="text"],
 .auth-card input[type="email"],
