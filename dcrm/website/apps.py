@@ -2,10 +2,15 @@ from django.apps import AppConfig
 
 
 class WebsiteConfig(AppConfig):
-    """Configuración principal de la aplicación website."""
-
-    # Define el tipo de campo automático para las llaves primarias creadas por Django.
     default_auto_field = 'django.db.models.BigAutoField'
-
-    # Nombre de la aplicación dentro del proyecto.
     name = 'website'
+
+    def ready(self):
+        """
+        Carga las señales de la app cuando Django inicia.
+
+        Esto permite que signals.py escuche eventos como:
+        - antes de guardar un pedido
+        - después de guardar un pedido
+        """
+        import website.signals
