@@ -2,16 +2,20 @@
 
 from django.conf import settings # Importa las variables de entorno del proyecto.
 from django.contrib.auth import get_user_model # Importa el modelo de usuario.
+from django.contrib.messages import get_messages
 from django.test import Client, TestCase # Importa las clases de pruebas.
 from django.urls import reverse # Importa las funciones de URL.
+
+from website.forms import OrderForm, OrderItemForm, SignUpForm
+from website.models import Order
 
 
 class HomeViewTests(TestCase): #
     """Verifica el formulario visible en la página principal."""
 
     def test_login_form_posts_to_login_route(self): # funcion de prueba
-        # Protege el bug donde el formulario enviaba a `home` en vez de `login`.
-        response = self.client.get(reverse('home')) # lo que hace es obtener la URL del formulario.
+        # home redirige a login; allí se protege que el formulario envíe a la ruta correcta.
+        response = self.client.get(reverse('login')) # lo que hace es obtener la URL del formulario.
         # Verifica que el formulario se envía a la ruta correcta
 
         self.assertContains(response, f'action="{reverse("login")}"')
@@ -67,7 +71,7 @@ class LoginFlowTests(TestCase): # Esta clase se ejecuta antes de las pruebas
         self.assertRedirects(response, reverse('orders'))
         self.assertEqual(str(admin_user.pk), self.client.session.get('_auth_user_id'))
 
-    def test_invalid_csrf_post_redirects_to_home(self):
+    def test_invalid_csrf_post_redirects_to_login(self):
         # Simula el caso del navegador enviando un formulario sin token válido.
         csrf_client = Client(enforce_csrf_checks=True)
 
@@ -76,7 +80,7 @@ class LoginFlowTests(TestCase): # Esta clase se ejecuta antes de las pruebas
             {'username': 'Braianprueba', 'password': 'prueba1234'},
         )
 
-        self.assertRedirects(response, reverse('home'), fetch_redirect_response=False)
+        self.assertRedirects(response, reverse('login'), fetch_redirect_response=False)
 
 
 class OrderRoleAccessTests(TestCase):
@@ -110,3 +114,82 @@ class OrderRoleAccessTests(TestCase):
         response = self.client.get(reverse('orders'))
 
         self.assertEqual(response.status_code, 200)
+
+
+class LoginValidationTests(TestCase):
+    """Verifica mensajes de inicio de sesión en español."""
+
+    def test_empty_login_uses_spanish_validation_message(self):
+        # Valida que el login manual no muestre mensajes genéricos en inglés.
+        response = self.client.post(reverse('login'), {'username': '', 'password': ''})
+        messages = [str(message) for message in get_messages(response.wsgi_request)]
+
+        self.assertRedirects(response, reverse('login'))
+        self.assertIn('Debes ingresar usuario y contraseña.', messages)
+
+
+class SignUpFormValidationTests(TestCase):
+    """Verifica mensajes de registro en español."""
+
+    def test_required_registration_fields_use_labels_and_spanish_messages(self):
+        # Los labels evitan que el template muestre errores con prefijo vacío, como ": required".
+        form = SignUpForm(data={})
+
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.fields['username'].label, 'Usuario')
+        self.assertIn('Debes ingresar un nombre de usuario.', form.errors['username'])
+        self.assertIn('Debes ingresar tu nombre.', form.errors['first_name'])
+        self.assertIn('Debes ingresar tu apellido.', form.errors['last_name'])
+        self.assertIn('Debes ingresar un correo electrónico.', form.errors['email'])
+        self.assertIn('Debes ingresar una contraseña.', form.errors['password1'])
+        self.assertIn('Debes confirmar la contraseña.', form.errors['password2'])
+
+    def test_password_mismatch_uses_spanish_message(self):
+        form = SignUpForm(
+            data={
+                'username': 'cliente1',
+                'first_name': 'Cliente',
+                'last_name': 'Prueba',
+                'email': 'cliente@example.com',
+                'password1': 'clave-segura-123',
+                'password2': 'otra-clave-123',
+            }
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('Las contraseñas no coinciden.', form.errors['password2'])
+
+
+class OrderFormValidationTests(TestCase):
+    """Verifica mensajes de pedidos en español."""
+
+    def test_required_order_fields_use_spanish_messages(self):
+        # El formulario padre traduce los errores obligatorios del ModelForm.
+        form = OrderForm(data={})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('Debes ingresar el número de pedido.', form.errors['order_number'])
+        self.assertIn('Debes ingresar el total del pedido.', form.errors['total'])
+
+    def test_duplicate_order_number_uses_spanish_message(self):
+        Order.objects.create(order_number='ORD-001', total='10.00')
+
+        form = OrderForm(
+            data={
+                'order_number': 'ord-001',
+                'status': Order.STATUS_PENDING,
+                'payment_status': Order.PAYMENT_PENDING,
+                'total': '20.00',
+            }
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('Ya existe un pedido con ese número.', form.errors['order_number'])
+
+    def test_started_order_item_requires_complete_row_in_spanish(self):
+        # Si el usuario empieza una fila de producto, se exige completarla en español.
+        form = OrderItemForm(data={'product_name': 'Teclado', 'quantity': '', 'unit_price': ''})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('La cantidad es obligatoria.', form.errors['quantity'])
+        self.assertIn('El precio unitario es obligatorio.', form.errors['unit_price'])

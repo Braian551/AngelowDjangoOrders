@@ -1,0 +1,59 @@
+<!-- 
+    Partial reutilizable para renderizar un item del formset de productos.
+
+    Se usa en:
+    - order_form.html
+
+    Recibe:
+    - item_form
+-->
+
+<div class="order-item-card">
+
+    <!-- Campos ocultos internos del formset. -->
+    {% for hidden in item_form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+
+    <div class="row g-3 align-items-end">
+
+        <!-- Producto. -->
+        <div class="col-lg-5 col-md-12">
+            {% include 'orders/partials/order_field.html' with field=item_form.product_name %}
+        </div>
+
+        <!-- Cantidad. -->
+        <div class="col-lg-2 col-md-4">
+            {% include 'orders/partials/order_field.html' with field=item_form.quantity %}
+        </div>
+
+        <!-- Precio unitario. -->
+        <div class="col-lg-3 col-md-4">
+            {% include 'orders/partials/order_field.html' with field=item_form.unit_price %}
+        </div>
+
+        <!-- Campo para eliminar item existente. -->
+        <div class="col-lg-2 col-md-4">
+            {% if item_form.instance.pk %}
+                <div class="order-delete-box">
+                    <label class="form-label" for="{{ item_form.DELETE.id_for_label }}">
+                        Eliminar
+                    </label>
+
+                    <div class="form-check">
+                        {{ item_form.DELETE }}
+                        <span class="form-check-label">
+                            Marcar
+                        </span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="order-new-item-badge">
+                    Nuevo producto
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>

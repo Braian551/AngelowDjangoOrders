@@ -8,13 +8,14 @@
 :root {
     --app-bg: #f4f6fb;
     --app-text: #111827;
-    --app-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    --app-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
 }
 
 /* Fondo base de todas las páginas. */
 body {
     background: var(--app-bg);
     color: var(--app-text);
+    font-weight: 400;
 }
 
 /* Contenedor flotante de mensajes de Django. */
@@ -26,9 +27,14 @@ body {
     width: min(380px, calc(100% - 32px));
 }
 
-/* Alertas con apariencia más limpia. */
+/* Alertas con apariencia limpia. */
 .app-messages .alert {
     border: 0;
     border-radius: 14px;
     box-shadow: var(--app-shadow);
+    font-weight: 400;
+}
+
+.app-messages .alert strong {
+    font-weight: 600;
 }

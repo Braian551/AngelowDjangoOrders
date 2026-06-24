@@ -70,6 +70,48 @@ class OrderForm(forms.ModelForm):
             ),
         }
 
+        # Mensajes de validación del pedido en español.
+        error_messages = {
+            'order_number': {
+                'required': 'Debes ingresar el número de pedido.',
+                'unique': 'Ya existe un pedido con ese número.',
+                'max_length': 'El número de pedido no puede superar 20 caracteres.',
+            },
+            'status': {
+                'required': 'Debes seleccionar el estado del pedido.',
+                'invalid_choice': 'Selecciona un estado de pedido válido.',
+            },
+            'payment_status': {
+                'required': 'Debes seleccionar el estado de pago.',
+                'invalid_choice': 'Selecciona un estado de pago válido.',
+            },
+            'total': {
+                'required': 'Debes ingresar el total del pedido.',
+                'invalid': 'Ingresa un total válido.',
+                'max_digits': 'El total no puede superar 10 dígitos.',
+                'max_decimal_places': 'El total solo puede tener 2 decimales.',
+            },
+        }
+
+    def clean_order_number(self):
+        """
+        Valida que el número público del pedido sea único con un mensaje en español.
+        """
+        order_number = self.cleaned_data.get('order_number', '').strip()
+
+        if not order_number:
+            return order_number
+
+        existing_orders = Order.objects.filter(order_number__iexact=order_number)
+
+        if self.instance.pk:
+            existing_orders = existing_orders.exclude(pk=self.instance.pk)
+
+        if existing_orders.exists():
+            raise forms.ValidationError('Ya existe un pedido con ese número.')
+
+        return order_number
+
     def clean_total(self):
         """
         Valida que el total del pedido no sea negativo.
@@ -77,7 +119,10 @@ class OrderForm(forms.ModelForm):
         Django ejecuta automáticamente este método cuando llamas:
         form.is_valid()
         """
-        total = self.cleaned_data['total']
+        total = self.cleaned_data.get('total')
+
+        if total is None:
+            return total
 
         # Evita guardar pedidos con valores negativos aunque el navegador no valide el input.
         if total < Decimal('0.00'):
@@ -156,6 +201,21 @@ class OrderItemForm(forms.ModelForm):
                     'step': '0.01',
                 }
             ),
+        }
+
+        # Mensajes de validación de productos en español.
+        error_messages = {
+            'product_name': {
+                'max_length': 'El producto no puede superar 100 caracteres.',
+            },
+            'quantity': {
+                'invalid': 'Ingresa una cantidad válida.',
+            },
+            'unit_price': {
+                'invalid': 'Ingresa un precio unitario válido.',
+                'max_digits': 'El precio unitario no puede superar 10 dígitos.',
+                'max_decimal_places': 'El precio unitario solo puede tener 2 decimales.',
+            },
         }
 
     def clean_quantity(self):

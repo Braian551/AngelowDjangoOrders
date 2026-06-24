@@ -1,0 +1,557 @@
+/*
+    Estilos exclusivos del módulo de pedidos.
+
+    Se usa en:
+    - orders/order_list.html
+    - orders/order_form.html
+    - orders/order_confirm_delete.html
+
+    Objetivo:
+    - Mantener un diseño limpio.
+    - Evitar letras demasiado gruesas.
+    - Reutilizar estilos para cumplir DRY.
+*/
+
+:root {
+    --orders-bg: #f4f6fb;
+    --orders-surface: #ffffff;
+    --orders-soft: #f8fafc;
+    --orders-text: #111827;
+    --orders-muted: #64748b;
+    --orders-border: #e5e7eb;
+    --orders-primary: #2563eb;
+    --orders-primary-dark: #1d4ed8;
+    --orders-danger: #dc2626;
+    --orders-warning: #f59e0b;
+    --orders-success: #16a34a;
+    --orders-radius: 18px;
+    --orders-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+}
+
+/* Fondo general del módulo. */
+body {
+    background: var(--orders-bg);
+}
+
+/* Página principal del módulo de pedidos. */
+.orders-page {
+    min-height: calc(100vh - 56px);
+    padding: 42px 24px;
+}
+
+/* 
+    Encabezado superior del módulo.
+
+    Aquí se muestra:
+    - etiqueta pequeña
+    - título
+    - descripción
+    - botón principal
+*/
+.orders-header {
+    width: min(1280px, 100%);
+    margin: 0 auto 24px;
+    padding: 28px 30px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    border: 1px solid var(--orders-border);
+    border-radius: var(--orders-radius);
+    background: var(--orders-surface);
+    box-shadow: var(--orders-shadow);
+}
+
+/* Título principal más natural, menos grueso. */
+.orders-header h1 {
+    margin: 12px 0 8px;
+    color: var(--orders-text);
+    font-size: clamp(2rem, 4vw, 2.7rem);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+}
+
+/* Texto descriptivo del encabezado. */
+.orders-header p {
+    max-width: 760px;
+    margin: 0;
+    color: var(--orders-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* Etiqueta pequeña del encabezado. */
+.orders-kicker {
+    display: inline-flex;
+    width: fit-content;
+    padding: 7px 12px;
+    border-radius: 999px;
+    color: var(--orders-primary-dark);
+    background: #dbeafe;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+/* Botón principal del módulo. */
+.orders-main-action {
+    white-space: nowrap;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+/* 
+    Tarjeta principal reutilizable.
+
+    Se usa para:
+    - listado de pedidos
+    - formulario de creación/edición
+*/
+.orders-card {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+    overflow: hidden;
+    border: 1px solid var(--orders-border);
+    border-radius: var(--orders-radius);
+    background: var(--orders-surface);
+    box-shadow: var(--orders-shadow);
+}
+
+/* Encabezado interno de cada tarjeta. */
+.orders-card-header {
+    padding: 24px 30px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    border-bottom: 1px solid var(--orders-border);
+    background: var(--orders-surface);
+}
+
+/* Títulos internos con peso moderado. */
+.orders-card-header h2 {
+    margin: 0;
+    color: var(--orders-text);
+    font-size: 1.35rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+}
+
+.orders-card-header p {
+    margin: 5px 0 0;
+    color: var(--orders-muted);
+    line-height: 1.5;
+}
+
+/* Cuerpo interno de las tarjetas. */
+.orders-card-body {
+    padding: 28px 30px;
+}
+
+/* Contador de pedidos. */
+.orders-counter {
+    padding: 8px 13px;
+    border-radius: 999px;
+    color: var(--orders-primary-dark);
+    background: #eff6ff;
+    font-size: 0.86rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* =========================
+   TABLA DE PEDIDOS
+   ========================= */
+
+/* Cabecera de la tabla. */
+.orders-table thead th {
+    padding: 15px 18px;
+    color: #475569;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--orders-border);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 650;
+}
+
+/* Celdas de la tabla. */
+.orders-table tbody td {
+    padding: 18px;
+    color: #334155;
+    border-color: #eef2f7;
+    font-size: 0.95rem;
+    font-weight: 400;
+}
+
+/* Hover sutil sobre filas. */
+.orders-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* ID visual del pedido. */
+.orders-id {
+    display: inline-flex;
+    padding: 6px 10px;
+    border-radius: 10px;
+    color: var(--orders-primary-dark);
+    background: #eff6ff;
+    font-weight: 600;
+}
+
+/* 
+    Badges de estado.
+
+    Antes estaban muy gruesos.
+    Ahora quedan más suaves.
+*/
+.status-badge {
+    display: inline-flex;
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+/* Estado del pedido. */
+.status-order {
+    color: #92400e;
+    background: #fef3c7;
+}
+
+/* Estado del pago. */
+.status-payment {
+    color: #1d4ed8;
+    background: #dbeafe;
+}
+
+/* Lista de productos dentro de la tabla. */
+.products-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Botones de acciones. */
+.orders-actions {
+    display: inline-flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.orders-actions .btn {
+    border-radius: 9px;
+    font-weight: 500;
+}
+
+/* Estado vacío cuando no hay pedidos. */
+.orders-empty {
+    padding: 48px 20px;
+    text-align: center;
+}
+
+.orders-empty-icon {
+    width: 72px;
+    height: 72px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 16px;
+    border-radius: 22px;
+    background: #eff6ff;
+    font-size: 2rem;
+}
+
+.orders-empty h3 {
+    margin: 0 0 8px;
+    color: var(--orders-text);
+    font-weight: 650;
+}
+
+.orders-empty p {
+    margin: 0 0 20px;
+    color: var(--orders-muted);
+}
+
+/* =========================
+   FORMULARIO DE PEDIDOS
+   ========================= */
+
+/* Grupo reutilizable para campos del formulario. */
+.order-form-group {
+    margin-bottom: 0.35rem;
+}
+
+/* Labels menos pesados. */
+.order-form-group .form-label {
+    color: #334155;
+    font-weight: 600;
+}
+
+/* Inputs, selects y textareas del formulario. */
+.orders-card input,
+.orders-card select,
+.orders-card textarea {
+    width: 100%;
+    min-height: 46px;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--orders-border);
+    border-radius: 14px;
+    background: var(--orders-soft);
+    color: var(--orders-text);
+    font-weight: 400;
+}
+
+/* Focus de campos. */
+.orders-card input:focus,
+.orders-card select:focus,
+.orders-card textarea:focus {
+    outline: none;
+    border-color: var(--orders-primary);
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+/* Help text de los campos. */
+.form-help {
+    margin-top: 0.45rem;
+    color: var(--orders-muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+/* Si el help text trae <small>, lo normalizamos. */
+.form-help small {
+    color: inherit;
+    font-size: inherit;
+}
+
+/* Si el help text trae una lista <ul>, se ve mejor. */
+.form-help ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.1rem;
+}
+
+.form-help li {
+    margin-bottom: 0.25rem;
+}
+
+/* Error individual de campo. */
+.field-error {
+    margin-top: 0.35rem;
+    color: var(--orders-danger);
+    font-size: 0.84rem;
+    font-weight: 600;
+}
+
+/* Lista de productos en el formulario. */
+.order-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Tarjeta de cada producto dentro del formset. */
+.order-item-card {
+    padding: 18px;
+    border: 1px solid var(--orders-border);
+    border-radius: 16px;
+    background: var(--orders-soft);
+}
+
+/* Caja de eliminar item. */
+.order-delete-box {
+    padding: 8px 0;
+}
+
+.order-delete-box .form-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Evita que el checkbox tome estilos de input grande. */
+.order-delete-box input {
+    width: auto;
+    min-height: auto;
+    padding: 0;
+}
+
+/* Badge para productos nuevos. */
+.order-new-item-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 46px;
+    padding: 0 12px;
+    border-radius: 999px;
+    color: var(--orders-primary-dark);
+    background: #dbeafe;
+    font-size: 0.84rem;
+    font-weight: 600;
+}
+
+/* Acciones del formulario. */
+.orders-form-actions {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.orders-form-actions .btn {
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+/* =========================
+   CONFIRMACIÓN DE ELIMINACIÓN
+   ========================= */
+
+.delete-layout {
+    min-height: calc(100vh - 160px);
+    display: grid;
+    place-items: center;
+}
+
+/* Tarjeta de eliminación. */
+.delete-card {
+    width: min(460px, 100%);
+    padding: 36px;
+    border: 1px solid var(--orders-border);
+    border-radius: 24px;
+    background: var(--orders-surface);
+    box-shadow: var(--orders-shadow);
+    text-align: center;
+}
+
+/* Icono de advertencia. */
+.delete-icon {
+    width: 72px;
+    height: 72px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 18px;
+    border-radius: 999px;
+    color: var(--orders-danger);
+    background: #fee2e2;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.delete-card h1 {
+    margin: 0 0 12px;
+    color: var(--orders-text);
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.delete-card p {
+    margin: 0 0 24px;
+    color: var(--orders-muted);
+    line-height: 1.6;
+}
+
+/* Botones de eliminación. */
+.delete-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.delete-actions .btn {
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+/* Tablets. */
+@media (max-width: 992px) {
+    .orders-header,
+    .orders-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .orders-main-action {
+        width: 100%;
+    }
+}
+
+/* Celulares. */
+@media (max-width: 768px) {
+    .orders-page {
+        padding: 24px 14px;
+    }
+
+    .orders-header,
+    .orders-card,
+    .delete-card {
+        border-radius: 18px;
+    }
+
+    .orders-card-body {
+        padding: 20px;
+    }
+
+    .orders-header h1 {
+        font-size: 2rem;
+    }
+
+    /* Tabla convertida en tarjetas para móvil. */
+    .orders-table thead {
+        display: none;
+    }
+
+    .orders-table,
+    .orders-table tbody,
+    .orders-table tr,
+    .orders-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .orders-table tbody tr {
+        padding: 16px;
+        border-bottom: 1px solid var(--orders-border);
+    }
+
+    .orders-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 10px 0;
+        border: 0;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .orders-table tbody td::before {
+        content: attr(data-label);
+        color: var(--orders-muted);
+        font-weight: 600;
+    }
+
+    .orders-actions {
+        justify-content: flex-start;
+    }
+
+    .orders-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .orders-form-actions .btn {
+        width: 100%;
+    }
+
+    .delete-actions {
+        flex-direction: column-reverse;
+    }
+
+    .delete-actions .btn {
+        width: 100%;
+    }
+}

@@ -1,0 +1,33 @@
+<!-- 
+    Partial reutilizable para renderizar campos de formularios.
+
+    Se usa en:
+    - order_form.html
+
+    Recibe:
+    - field
+-->
+
+<div class="order-form-group">
+
+    <label class="form-label" for="{{ field.id_for_label }}">
+        {{ field.label }}
+    </label>
+
+    {{ field }}
+
+    <!-- Help text del campo. -->
+    {% if field.help_text %}
+        <div class="form-help">
+            {{ field.help_text|safe }}
+        </div>
+    {% endif %}
+
+    <!-- Errores del campo. -->
+    {% for error in field.errors %}
+        <div class="field-error">
+            {{ error }}
+        </div>
+    {% endfor %}
+
+</div>
