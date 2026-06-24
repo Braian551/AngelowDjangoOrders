@@ -44,7 +44,7 @@ def login_user(request):
 
     return redirect('home')
 
-
+# never cache es para que no se cachee la página de inicio.
 @never_cache
 def logout_user(request):
     """Cierra la sesión actual y vuelve a la página principal."""
@@ -54,7 +54,8 @@ def logout_user(request):
 
 
 @never_cache
-@ensure_csrf_cookie
+@ensure_csrf_cookie #ensure csrf cookie es para que Django genere el cookie csrf_token.
+
 def register_user(request):
     """Registra un usuario nuevo y lo autentica automáticamente."""
     if request.method == 'POST':
