@@ -1,5 +1,12 @@
 /*
-    Estilos exclusivos de login.html.
+    Estilos compartidos para pantallas de autenticación.
+
+    Se usa en:
+    - login.html
+    - register.html
+
+    Principio DRY:
+    El diseño del login y registro vive en un solo archivo.
 */
 
 :root {
@@ -13,14 +20,14 @@
     --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
 }
 
-/* Página completa de login. */
-.login-page {
+/* Página completa de autenticación. */
+.auth-page {
     min-height: calc(100vh - 56px);
     padding: 48px 24px;
 }
 
 /* Layout en dos columnas. */
-.login-layout {
+.auth-layout {
     width: min(1180px, 100%);
     margin: 0 auto;
     display: grid;
@@ -29,16 +36,16 @@
     align-items: stretch;
 }
 
-/* Tarjetas principales del login. */
-.login-info,
-.login-card {
+/* Tarjetas principales. */
+.auth-info,
+.auth-card {
     min-height: 560px;
     border-radius: 24px;
     box-shadow: var(--shadow);
 }
 
 /* Bloque izquierdo informativo. */
-.login-info {
+.auth-info {
     position: relative;
     overflow: hidden;
     padding: 40px;
@@ -47,7 +54,7 @@
 }
 
 /* Círculo decorativo superior. */
-.login-info::before {
+.auth-info::before {
     content: "";
     position: absolute;
     width: 280px;
@@ -59,7 +66,7 @@
 }
 
 /* Círculo decorativo inferior. */
-.login-info::after {
+.auth-info::after {
     content: "";
     position: absolute;
     width: 180px;
@@ -70,15 +77,15 @@
     background: rgba(255, 255, 255, 0.1);
 }
 
-/* Coloca el contenido por encima de los círculos decorativos. */
-.login-brand,
-.login-copy {
+/* Mantiene el contenido por encima de los círculos decorativos. */
+.auth-brand,
+.auth-copy {
     position: relative;
     z-index: 1;
 }
 
 /* Marca superior izquierda. */
-.login-brand {
+.auth-brand {
     display: flex;
     align-items: center;
     gap: 16px;
@@ -97,26 +104,26 @@
     font-weight: 900;
 }
 
-.login-brand h1 {
+.auth-brand h1 {
     margin: 0;
     font-size: 1.4rem;
     font-weight: 800;
 }
 
-.login-brand p {
+.auth-brand p {
     margin: 2px 0 0;
     color: rgba(255, 255, 255, 0.78);
 }
 
 /* Texto principal del bloque izquierdo. */
-.login-copy {
+.auth-copy {
     max-width: 560px;
     margin-top: 190px;
 }
 
 /* Etiquetas pequeñas. */
 .section-kicker,
-.login-badge {
+.auth-badge {
     display: inline-flex;
     align-items: center;
     width: fit-content;
@@ -126,13 +133,13 @@
     font-weight: 700;
 }
 
-/* Etiqueta dentro del bloque azul. */
+/* Etiqueta dentro del panel azul. */
 .section-kicker {
     color: #ffffff;
     background: rgba(255, 255, 255, 0.18);
 }
 
-.login-copy h2 {
+.auth-copy h2 {
     margin: 18px 0 14px;
     font-size: clamp(2rem, 4vw, 3.5rem);
     line-height: 1;
@@ -140,7 +147,7 @@
     letter-spacing: -0.05em;
 }
 
-.login-copy p {
+.auth-copy p {
     margin: 0;
     color: rgba(255, 255, 255, 0.86);
     font-size: 1.05rem;
@@ -148,36 +155,36 @@
 }
 
 /* Tarjeta blanca del formulario. */
-.login-card {
+.auth-card {
     display: flex;
     align-items: center;
     padding: 48px;
     background: var(--surface);
 }
 
-.login-card-inner {
+.auth-card-inner {
     width: 100%;
     max-width: 470px;
     margin: 0 auto;
 }
 
-.login-card-header {
+.auth-card-header {
     margin-bottom: 32px;
 }
 
-.login-badge {
+.auth-badge {
     color: var(--primary-dark);
     background: #eff6ff;
 }
 
-.login-card h2 {
+.auth-card h2 {
     margin: 18px 0 8px;
     font-size: 2.25rem;
     font-weight: 900;
     letter-spacing: -0.04em;
 }
 
-.login-card p {
+.auth-card p {
     margin: 0;
     color: var(--muted);
 }
@@ -194,15 +201,29 @@
     font-weight: 700;
 }
 
-/* Inputs del login. */
-.form-control {
-    border-color: var(--border);
+/* Inputs escritos manualmente y también inputs renderizados por Django. */
+.auth-card input[type="text"],
+.auth-card input[type="email"],
+.auth-card input[type="password"],
+.auth-card .form-control {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
     border-radius: 14px;
     background: var(--surface-soft);
+    color: var(--text);
+    font-size: 1rem;
 }
 
-.form-control:focus {
+/* Estado focus para inputs. */
+.auth-card input[type="text"]:focus,
+.auth-card input[type="email"]:focus,
+.auth-card input[type="password"]:focus,
+.auth-card .form-control:focus {
+    outline: none;
     border-color: var(--primary);
+    background: #ffffff;
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
@@ -211,8 +232,8 @@
     position: relative;
 }
 
-.password-field .form-control {
-    padding-right: 74px;
+.password-field input {
+    padding-right: 82px !important;
 }
 
 .password-field button {
@@ -229,7 +250,7 @@
 }
 
 /* Recordarme y recuperar contraseña. */
-.login-actions {
+.auth-actions {
     display: flex;
     justify-content: space-between;
     gap: 12px;
@@ -238,13 +259,13 @@
     font-size: 0.92rem;
 }
 
-.login-actions a {
+.auth-actions a {
     color: var(--primary-dark);
     font-weight: 700;
     text-decoration: none;
 }
 
-.login-actions a:hover {
+.auth-actions a:hover {
     text-decoration: underline;
 }
 
@@ -255,54 +276,89 @@
 }
 
 /* Botón principal. */
-.login-submit {
+.auth-submit {
     border: 0;
     border-radius: 14px;
     font-weight: 800;
     background: var(--primary);
 }
 
-.login-submit:hover {
+.auth-submit:hover {
     background: var(--primary-dark);
+}
+
+/* Texto de ayuda del formulario de registro. */
+.form-help {
+    display: block;
+    margin-top: 0.45rem;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+/* Lista de errores del registro. */
+.auth-errors {
+    margin: 0.75rem 0 0;
+    padding-left: 1.2rem;
+}
+
+/* Enlace inferior para cambiar entre login y registro. */
+.auth-bottom-link {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 1.4rem;
+    color: var(--muted);
+    font-size: 0.94rem;
+}
+
+.auth-bottom-link a {
+    color: var(--primary-dark);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.auth-bottom-link a:hover {
+    text-decoration: underline;
 }
 
 /* Responsive para tablets. */
 @media (max-width: 1100px) {
-    .login-layout {
+    .auth-layout {
         grid-template-columns: 1fr;
     }
 
-    .login-info,
-    .login-card {
+    .auth-info,
+    .auth-card {
         min-height: auto;
     }
 
-    .login-copy {
+    .auth-copy {
         margin-top: 90px;
     }
 }
 
 /* Responsive para celulares. */
 @media (max-width: 768px) {
-    .login-page {
+    .auth-page {
         padding: 24px 14px;
     }
 
-    .login-info,
-    .login-card {
+    .auth-info,
+    .auth-card {
         padding: 28px;
         border-radius: 18px;
     }
 
-    .login-copy {
+    .auth-copy {
         margin-top: 70px;
     }
 
-    .login-card h2 {
+    .auth-card h2 {
         font-size: 1.8rem;
     }
 
-    .login-actions {
+    .auth-actions {
         flex-direction: column;
         align-items: flex-start;
     }

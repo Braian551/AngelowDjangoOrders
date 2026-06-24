@@ -1,0 +1,33 @@
+<!-- 
+    Panel visual reutilizable para pantallas de autenticación.
+
+    Se usa en:
+    - login.html
+    - register.html
+
+    Recibe estas variables:
+    - auth_kicker
+    - auth_title
+    - auth_description
+-->
+
+<section class="auth-info">
+    <div class="auth-brand">
+        <span class="brand-mark">A</span>
+
+        <div>
+            <h1>Angelow</h1>
+            <p>Panel de gestión para registros, clientes y pedidos.</p>
+        </div>
+    </div>
+
+    <div class="auth-copy">
+        <span class="section-kicker">{{ auth_kicker }}</span>
+
+        <h2>{{ auth_title }}</h2>
+
+        <p>
+            {{ auth_description }}
+        </p>
+    </div>
+</section>

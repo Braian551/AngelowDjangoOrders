@@ -1,38 +1,159 @@
 {% extends 'base.html' %}
+{% load static %}
 
+<!-- CSS compartido para pantallas de autenticación: login y registro. -->
+{% block extra_css %}
+<link href="{% static 'css/auth.css' %}" rel="stylesheet">
+{% endblock %}
 
 {% block content %}
-{# Formulario de alta de usuario basado en SignUpForm. #}
-<h1>Registro nuevo usuario ✍🏼</h1>
-<br />
 
+<section class="auth-page">
 
-<form method="post" action="">
-    {% csrf_token %}
-   
-    {% if form.errors %}
-    {# Muestra errores agrupados para que el usuario pueda corregir el registro. #}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>Error de registro:</strong> por favor revise los datos ingresados.
-        <ul>
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
-                {% endfor %}
-            {% endfor %}
-        </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <!-- Layout principal de autenticación. -->
+    <div class="auth-layout">
+
+        <!-- Panel visual reutilizable. -->
+        {% include 'partials/auth_brand_panel.html' with auth_kicker='Crear cuenta' auth_title='Registra un nuevo usuario en el sistema.' auth_description='Completa los datos del formulario para crear una cuenta y acceder al panel de gestión de Angelow.' %}
+
+        <!-- Tarjeta del formulario de registro. -->
+        <section class="auth-card">
+            <div class="auth-card-inner">
+
+                <div class="auth-card-header">
+                    <span class="auth-badge">Registro seguro</span>
+
+                    <h2>Registro nuevo usuario</h2>
+
+                    <p>Ingresa los datos necesarios para crear la cuenta.</p>
+                </div>
+
+                <!-- Formulario de alta de usuario basado en SignUpForm. -->
+                <form method="POST" action="" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Muestra errores agrupados para que el usuario pueda corregir el registro. -->
+                    {% if form.errors %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong>Error de registro:</strong> por favor revisa los datos ingresados.
+
+                            <ul class="auth-errors">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                        </div>
+                    {% endif %}
+
+                    <!-- Campo usuario. -->
+                    <div class="form-group">
+                        <label for="{{ form.username.id_for_label }}">Usuario</label>
+                        {{ form.username }}
+
+                        {% if form.username.help_text %}
+                            <small class="form-help">{{ form.username.help_text }}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Campo nombre. Solo aparece si tu SignUpForm lo tiene. -->
+                    {% if form.first_name %}
+                        <div class="form-group">
+                            <label for="{{ form.first_name.id_for_label }}">Nombre</label>
+                            {{ form.first_name }}
+                        </div>
+                    {% endif %}
+
+                    <!-- Campo apellido. Solo aparece si tu SignUpForm lo tiene. -->
+                    {% if form.last_name %}
+                        <div class="form-group">
+                            <label for="{{ form.last_name.id_for_label }}">Apellido</label>
+                            {{ form.last_name }}
+                        </div>
+                    {% endif %}
+
+                    <!-- Campo correo. Solo aparece si tu SignUpForm lo tiene. -->
+                    {% if form.email %}
+                        <div class="form-group">
+                            <label for="{{ form.email.id_for_label }}">Correo electrónico</label>
+                            {{ form.email }}
+                        </div>
+                    {% endif %}
+
+                    <!-- Campo contraseña principal. -->
+                    <div class="form-group">
+                        <label for="{{ form.password1.id_for_label }}">Contraseña</label>
+
+                        <div class="password-field">
+                            {{ form.password1 }}
+
+                            <!-- 
+                                Botón genérico.
+                                auth.js usa el id del input para mostrar u ocultar contraseña.
+                            -->
+                            <button
+                                type="button"
+                                data-password-toggle="{{ form.password1.id_for_label }}"
+                                aria-label="Mostrar contraseña"
+                            >
+                                Ver
+                            </button>
+                        </div>
+
+                        {% if form.password1.help_text %}
+                            <small class="form-help">{{ form.password1.help_text }}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Campo confirmación de contraseña. -->
+                    <div class="form-group">
+                        <label for="{{ form.password2.id_for_label }}">Confirmar contraseña</label>
+
+                        <div class="password-field">
+                            {{ form.password2 }}
+
+                            <!-- Botón genérico reutilizado por auth.js. -->
+                            <button
+                                type="button"
+                                data-password-toggle="{{ form.password2.id_for_label }}"
+                                aria-label="Mostrar confirmación de contraseña"
+                            >
+                                Ver
+                            </button>
+                        </div>
+
+                        {% if form.password2.help_text %}
+                            <small class="form-help">{{ form.password2.help_text }}</small>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 auth-submit">
+                        Registrar
+                    </button>
+
+                    <div class="auth-bottom-link">
+                        <span>¿Ya tienes una cuenta?</span>
+                        <a href="{% url 'login' %}">Inicia sesión</a>
+                    </div>
+                </form>
+
+            </div>
+        </section>
+
     </div>
-    {% endif %}
 
+</section>
 
-    {{ form.as_p }}
+{% endblock %}
 
-
-    <button type="submit" class="btn btn-primary">
-        Registrar
-    </button>
-</form>
-
-
+<!-- JavaScript compartido para login y registro. -->
+{% block extra_js %}
+<script src="{% static 'js/auth.js' %}"></script>
 {% endblock %}
