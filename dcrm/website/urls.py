@@ -2,14 +2,11 @@ from django.urls import path
 
 from . import views
 
-
-# Convención Django de enrutamiento.
-# No es un patrón GoF del catálogo; este archivo decide qué vista atiende cada URL.
-# Rutas disponibles para la aplicación website.
-# Mantener nombres estables evita romper los `{% url %}` usados por las plantillas.
 urlpatterns = [
-    # Página principal y autenticación.
+    # Página principal.
     path('', views.home, name='home'),
+
+    # Autenticación.
     path('login/', views.login_user, name='login'),
     path('logout/', views.logout_user, name='logout'),
     path('registrar/', views.register_user, name='register'),

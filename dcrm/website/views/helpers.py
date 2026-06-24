@@ -1,4 +1,3 @@
-#Este view para logica adicional
 from django.core.paginator import Paginator
 
 from website.models import Record
@@ -20,6 +19,8 @@ def get_login_redirect_url(user):
     Devuelve la ruta a la que debe ir el usuario después de iniciar sesión.
 
     Esta función centraliza la política de roles para no duplicarla en las vistas.
+
+    Reglas:
     - Admin: entra al módulo de pedidos.
     - Cliente: vuelve al inicio.
     """
@@ -30,10 +31,17 @@ def get_login_redirect_url(user):
 
 
 def paginate_records(request):
-    """Devuelve los registros de clientes paginados para la página principal."""
-    # Se ordena del más reciente al más antiguo para mostrar primero la actividad nueva.
+    """
+    Devuelve los registros de clientes paginados para el dashboard.
+
+    Se ordenan del más reciente al más antiguo para mostrar primero
+    los registros nuevos.
+    """
     records_list = Record.objects.all().order_by('-created_at')
-    # Ocho registros por página mantiene la tabla legible en escritorio y móvil.
+
+    # Ocho registros por página mantiene la tabla legible.
     paginator = Paginator(records_list, 8)
+
     page_number = request.GET.get('page')
+
     return paginator.get_page(page_number)

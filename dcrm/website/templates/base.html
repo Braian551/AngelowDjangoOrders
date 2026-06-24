@@ -11,24 +11,28 @@
 
     <title>Angelow</title>
 
-    <!-- Bootstrap local cargado desde static/css/bootstrap.min.css -->
+    <!-- Bootstrap local cargado desde static/css/bootstrap.min.css. -->
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
 
-    {# 
+    <!-- Estilos globales del proyecto: mensajes, fondo base y ajustes generales. -->
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">
+
+    <!-- 
         Bloque para que cada plantilla hija pueda cargar su propio CSS.
 
         Ejemplo:
-        home.html puede cargar home.css sin meter estilos dentro del HTML.
-    #}
+        home.html carga home.css.
+        login.html carga login.css.
+    -->
     {% block extra_css %}
     {% endblock %}
 </head>
 
 <body>
-    {# Navbar compartida para todo el sitio. #}
+    <!-- Navbar compartida para todo el sitio. -->
     {% include 'navbar.html' %}
 
-    {# 
+    <!-- 
         Contenedor general de mensajes de Django.
 
         Estos mensajes vienen desde las vistas, por ejemplo:
@@ -37,17 +41,17 @@
         messages.warning(request, 'Revisa los campos.')
         messages.info(request, 'Información importante.')
 
-        Aquí los mostramos con colores de Bootstrap:
+        Bootstrap usa:
         success → verde
-        error   → rojo usando alert-danger
+        danger  → rojo
         warning → amarillo
         info    → azul
-    #}
+    -->
     {% if messages %}
         <div class="app-messages">
             {% for message in messages %}
 
-                {# Django usa "error", pero Bootstrap usa "danger". #}
+                <!-- Django usa "error", pero Bootstrap usa "danger". -->
                 {% if message.tags == 'error' %}
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <strong>Error:</strong> {{ message }}
@@ -83,26 +87,29 @@
         </div>
     {% endif %}
 
-    {# 
+    <!-- 
         Aquí se inyecta el contenido principal de cada página.
 
-        Por ejemplo:
-        - home.html coloca su login o dashboard aquí.
-        - register.html coloca su formulario aquí.
-        - order_list.html coloca su tabla de pedidos aquí.
-    #}
+        home.html coloca el dashboard.
+        login.html coloca el formulario de inicio de sesión.
+        register.html coloca el formulario de registro.
+        order_list.html coloca el listado de pedidos.
+    -->
     {% block content %}
     {% endblock %}
 
-    <!-- JavaScript de Bootstrap. Necesario para cerrar alertas, modales, dropdowns, etc. -->
+    <!-- JavaScript de Bootstrap. Necesario para alertas, dropdowns, modales, etc. -->
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 
-    {# 
+    <!-- JavaScript global del proyecto, por ejemplo cierre automático de mensajes. -->
+    <script src="{% static 'js/base.js' %}"></script>
+
+    <!-- 
         Bloque para que cada plantilla hija pueda cargar su propio JavaScript.
 
         Ejemplo:
-        home.html carga home.js.
-    #}
+        login.html carga login.js.
+    -->
     {% block extra_js %}
     {% endblock %}
 </body>

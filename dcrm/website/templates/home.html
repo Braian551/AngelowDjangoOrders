@@ -1,10 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
-<!-- 
-{# 
-    Cargamos solo el CSS de esta página.
-    Así evitamos poner <style> dentro del HTML.
-#} -->
+
+<!-- CSS exclusivo del dashboard. -->
 {% block extra_css %}
 <link href="{% static 'css/home.css' %}" rel="stylesheet">
 {% endblock %}
@@ -13,21 +10,13 @@
 
 <section class="home-page">
 
-    {#
-    Si el usuario ya inició sesión, mostramos el panel con registros.
-    Si no ha iniciado sesión, mostramos el formulario de login.
-    #}
-    {% if user.is_authenticated %}
-
-    <!-- =========================
-             PANEL DE USUARIO LOGUEADO
-             ========================= -->
+    <!-- Layout principal del dashboard. -->
     <div class="dashboard-layout">
 
-        <!-- Contenido principal del dashboard -->
+        <!-- Contenido principal del dashboard. -->
         <section class="dashboard-content">
 
-            <!-- Encabezado del panel -->
+            <!-- Encabezado del panel. -->
             <div class="dashboard-header">
                 <div>
                     <span class="section-kicker">Panel principal</span>
@@ -39,14 +28,14 @@
                     </p>
                 </div>
 
-                <!-- Resumen rápido de registros -->
+                <!-- Resumen rápido de registros. -->
                 <div class="dashboard-summary">
                     <span>{{ records.paginator.count }}</span>
                     <small>registros</small>
                 </div>
             </div>
 
-            <!-- Tarjeta que contiene la tabla -->
+            <!-- Tarjeta que contiene la tabla de registros. -->
             <div class="records-card">
 
                 <div class="records-card-header">
@@ -56,7 +45,7 @@
                     </div>
                 </div>
 
-                <!-- Tabla responsive -->
+                <!-- Tabla responsive. -->
                 <div class="table-responsive">
                     <table class="table records-table align-middle">
                         <thead>
@@ -76,118 +65,106 @@
 
                         <tbody>
                             {% if records %}
-                            {% for record in records %}
-                            <tr>
-                                <!-- Número visible de fila teniendo en cuenta la paginación -->
-                                <td data-label="#">
-                                    <span class="row-number">
-                                        {{ records.start_index|add:forloop.counter0 }}
-                                    </span>
-                                </td>
+                                {% for record in records %}
+                                    <tr>
+                                        <!-- Número visible de fila teniendo en cuenta la paginación. -->
+                                        <td data-label="#">
+                                            <span class="row-number">
+                                                {{ records.start_index|add:forloop.counter0 }}
+                                            </span>
+                                        </td>
 
-                                <td data-label="Nombre">{{ record.first_name }}</td>
-                                <td data-label="Apellido">{{ record.last_name }}</td>
-                                <td data-label="Email" class="text-primary fw-semibold">{{ record.email }}</td>
+                                        <td data-label="Nombre">{{ record.first_name }}</td>
+                                        <td data-label="Apellido">{{ record.last_name }}</td>
+                                        <td data-label="Email" class="text-primary fw-semibold">{{ record.email }}</td>
+                                        <td data-label="Teléfono">{{ record.phone_number }}</td>
+                                        <td data-label="Ciudad">{{ record.city }}</td>
+                                        <td data-label="Estado">{{ record.state }}</td>
+                                        <td data-label="Código postal">{{ record.zip_code }}</td>
+                                        <td data-label="Fecha">{{ record.created_at|date:"d/m/Y H:i" }}</td>
 
-                                {#
-                                Ojo:
-                                Según tu modelo, el campo correcto es phone_number.
-                                Si tu modelo usa otro nombre, cámbialo aquí.
-                                #}
-                                <td data-label="Teléfono">{{ record.phone_number }}</td>
-
-                                <td data-label="Ciudad">{{ record.city }}</td>
-                                <td data-label="Estado">{{ record.state }}</td>
-                                <td data-label="Código postal">{{ record.zip_code }}</td>
-                                <td data-label="Fecha">{{ record.created_at|date:"d/m/Y H:i" }}</td>
-
-                                <td data-label="Ver">
-                                    <a href="{% url 'customer_record' record.id %}"
-                                        class="btn btn-sm btn-outline-primary">
-                                        Ver
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
+                                        <td data-label="Ver">
+                                            <a href="{% url 'customer_record' record.id %}" class="btn btn-sm btn-outline-primary">
+                                                Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
                             {% else %}
-                            <tr>
-                                <td colspan="10" class="empty-table">
-                                    No hay registros disponibles.
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td colspan="10" class="empty-table">
+                                        No hay registros disponibles.
+                                    </td>
+                                </tr>
                             {% endif %}
                         </tbody>
                     </table>
                 </div>
 
-                {#
-                Paginación.
-                Solo aparece si hay más de una página.
-                #}
+                <!-- Paginación. Solo aparece si hay más de una página. -->
                 {% if records.paginator.num_pages > 1 %}
-                <nav class="records-pagination" aria-label="Paginación de registros">
-                    <ul class="pagination justify-content-center flex-wrap mb-0">
+                    <nav class="records-pagination" aria-label="Paginación de registros">
+                        <ul class="pagination justify-content-center flex-wrap mb-0">
 
-                        {% if records.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page=1" title="Primera página">&laquo;</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ records.previous_page_number }}"
-                                title="Página anterior">&lsaquo;</a>
-                        </li>
-                        {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">&laquo;</span>
-                        </li>
-                        <li class="page-item disabled">
-                            <span class="page-link">&lsaquo;</span>
-                        </li>
-                        {% endif %}
-
-                        {% for num in records.paginator.page_range %}
-                        {% if num >= records.number|add:'-2' and num <= records.number|add:'2' %} {% if
-                            records.number==num %} <li class="page-item active">
-                            <span class="page-link">{{ num }}</span>
-                            </li>
+                            {% if records.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1" title="Primera página">&laquo;</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ records.previous_page_number }}" title="Página anterior">&lsaquo;</a>
+                                </li>
                             {% else %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                            </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link">&laquo;</span>
+                                </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link">&lsaquo;</span>
+                                </li>
                             {% endif %}
-                            {% endif %}
+
+                            {% for num in records.paginator.page_range %}
+                                <!-- Muestra solo las páginas cercanas a la actual. -->
+                                {% if num >= records.number|add:'-2' and num <= records.number|add:'2' %}
+                                    {% if records.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endif %}
                             {% endfor %}
 
                             {% if records.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ records.next_page_number }}"
-                                    title="Página siguiente">&rsaquo;</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ records.paginator.num_pages }}"
-                                    title="Última página">&raquo;</a>
-                            </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ records.next_page_number }}" title="Página siguiente">&rsaquo;</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ records.paginator.num_pages }}" title="Última página">&raquo;</a>
+                                </li>
                             {% else %}
-                            <li class="page-item disabled">
-                                <span class="page-link">&rsaquo;</span>
-                            </li>
-                            <li class="page-item disabled">
-                                <span class="page-link">&raquo;</span>
-                            </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link">&rsaquo;</span>
+                                </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link">&raquo;</span>
+                                </li>
                             {% endif %}
 
-                    </ul>
+                        </ul>
 
-                    <p class="pagination-status">
-                        Página {{ records.number }} de {{ records.paginator.num_pages }}
-                    </p>
-                </nav>
+                        <p class="pagination-status">
+                            Página {{ records.number }} de {{ records.paginator.num_pages }}
+                        </p>
+                    </nav>
                 {% endif %}
 
             </div>
         </section>
 
-        <!-- Panel lateral del usuario -->
+        <!-- Panel lateral del usuario. -->
         <aside class="user-panel">
             <div class="user-avatar">
                 {{ user.username|first|upper }}
@@ -200,15 +177,15 @@
                 <div>
                     <span>Rol</span>
 
-                    {#
-                    Rol básico:
-                    - Admin si es staff o superusuario.
-                    - Cliente si es usuario normal.
-                    #}
+                    <!-- 
+                        Rol básico:
+                        Admin si es staff o superusuario.
+                        Cliente si es usuario normal.
+                    -->
                     {% if user.is_staff or user.is_superuser %}
-                    <strong>Admin</strong>
+                        <strong>Admin</strong>
                     {% else %}
-                    <strong>Cliente</strong>
+                        <strong>Cliente</strong>
                     {% endif %}
                 </div>
 
@@ -225,102 +202,6 @@
 
     </div>
 
-    {% else %}
-
-    <!-- =========================
-             VISTA DE LOGIN
-             ========================= -->
-    <div class="login-layout">
-
-        <!-- Bloque visual izquierdo -->
-        <section class="login-info">
-            <div class="login-brand">
-                <span class="brand-mark">A</span>
-
-                <div>
-                    <h1>Angelow</h1>
-                    <p>Panel de gestión para registros, clientes y pedidos.</p>
-                </div>
-            </div>
-
-            <div class="login-copy">
-                <span class="section-kicker">Sistema CMR</span>
-
-                <h2>Gestiona tu información desde un solo lugar.</h2>
-
-                <p>
-                    Accede de forma segura para consultar registros, revisar pedidos y administrar
-                    los datos principales del sistema.
-                </p>
-            </div>
-        </section>
-
-        <!-- Tarjeta del formulario de login -->
-        <section class="login-card">
-            <div class="login-card-inner">
-
-                <div class="login-card-header">
-                    <span class="login-badge">Acceso seguro</span>
-
-                    <h2>Iniciar sesión</h2>
-
-                    <p>Ingresa tus credenciales para continuar.</p>
-                </div>
-
-                {#
-                El formulario se envía a la ruta llamada "login".
-                Esa ruta debe existir en website/urls.py:
-                path('login/', views.login_user, name='login')
-                #}
-                <form method="POST" action="{% url 'login' %}" novalidate>
-                    {% csrf_token %}
-
-                    <div class="form-group">
-                        <label for="username">Usuario</label>
-
-                        <input type="text" name="username" id="username" class="form-control form-control-lg"
-                            placeholder="Ingresa tu usuario" autocomplete="username" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password">Contraseña</label>
-
-                        <div class="password-field">
-                            <input type="password" name="password" id="password" class="form-control form-control-lg"
-                                placeholder="Ingresa tu contraseña" autocomplete="current-password" required>
-
-                            {# Este botón muestra u oculta la contraseña usando home.js. #}
-                            <button type="button" id="togglePassword" aria-label="Mostrar contraseña">
-                                Ver
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="login-actions">
-                        <label class="remember-option">
-                            <input type="checkbox" name="remember">
-                            <span>Recordarme</span>
-                        </label>
-
-                        <a href="#">¿Olvidaste tu contraseña?</a>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-lg w-100 login-submit">
-                        Entrar
-                    </button>
-                </form>
-            </div>
-        </section>
-
-    </div>
-
-    {% endif %}
-
 </section>
 
-{% endblock %}
-
-{# Cargamos el JavaScript específico de esta página. #}
-{% block extra_js %}
-<script src="{% static 'js/home.js' %}"></script>
 {% endblock %}
