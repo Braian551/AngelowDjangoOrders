@@ -383,22 +383,32 @@ body {
     background: var(--orders-soft);
 }
 
-/* Caja de eliminar item. */
-.order-delete-box {
-    padding: 8px 0;
+.order-item-card.is-removing {
+    display: none;
 }
 
-.order-delete-box .form-check {
+/* Acciones para agregar o quitar productos del formset. */
+.order-add-item {
+    white-space: nowrap;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.order-item-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    min-height: 46px;
 }
 
-/* Evita que el checkbox tome estilos de input grande. */
-.order-delete-box input {
-    width: auto;
-    min-height: auto;
-    padding: 0;
+.order-remove-item {
+    width: 100%;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+/* El checkbox DELETE queda oculto, pero sigue viajando en el POST para Django. */
+.order-delete-control {
+    display: none;
 }
 
 /* Badge para productos nuevos. */

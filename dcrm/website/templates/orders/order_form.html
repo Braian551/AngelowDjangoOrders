@@ -75,8 +75,12 @@
             <div class="orders-card-header">
                 <div>
                     <h2>Productos del pedido</h2>
-                    <p>Agrega, edita o marca productos para eliminar del pedido.</p>
+                    <p>Agrega, edita o elimina productos del pedido.</p>
                 </div>
+
+                <button type="button" class="btn btn-primary order-add-item" id="addOrderItem">
+                    Agregar producto
+                </button>
             </div>
 
             <div class="orders-card-body">
@@ -96,6 +100,11 @@
                         {% include 'orders/partials/order_item_form.html' with item_form=item_form %}
                     {% endfor %}
                 </div>
+
+                <!-- Plantilla usada por orders.js para agregar productos sin recargar la página. -->
+                <template id="emptyOrderItemTemplate">
+                    {% include 'orders/partials/order_item_form.html' with item_form=formset.empty_form %}
+                </template>
 
             </div>
         </div>

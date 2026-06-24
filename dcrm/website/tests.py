@@ -115,6 +115,18 @@ class OrderRoleAccessTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
+    def test_order_form_uses_buttons_for_product_rows(self):
+        # La interfaz de productos usa botones Bootstrap y mantiene DELETE oculto para Django.
+        self.client.force_login(self.admin_user)
+
+        response = self.client.get(reverse('create_order'))
+
+        self.assertContains(response, 'id="addOrderItem"')
+        self.assertContains(response, 'Agregar producto')
+        self.assertContains(response, 'order-remove-item')
+        self.assertContains(response, 'Quitar')
+        self.assertNotContains(response, 'Marcar')
+
 
 class LoginValidationTests(TestCase):
     """Verifica mensajes de inicio de sesión en español."""
@@ -223,3 +235,34 @@ class OrderFormValidationTests(TestCase):
 
         self.assertEqual(total, 0)
         self.assertEqual(order.total, 0)
+
+    def test_create_order_calculates_total_from_posted_items(self):
+        admin_user = get_user_model().objects.create_user(
+            username='AdminCreatesOrder',
+            password='admin1234',
+            is_staff=True,
+        )
+        self.client.force_login(admin_user)
+
+        response = self.client.post(
+            reverse('create_order'),
+            {
+                'order_number': 'ORD-POST',
+                'status': Order.STATUS_PENDING,
+                'payment_status': Order.PAYMENT_PENDING,
+                'items-TOTAL_FORMS': '2',
+                'items-INITIAL_FORMS': '0',
+                'items-MIN_NUM_FORMS': '0',
+                'items-MAX_NUM_FORMS': '1000',
+                'items-0-product_name': 'Camisa',
+                'items-0-quantity': '3',
+                'items-0-unit_price': '1000.00',
+                'items-1-product_name': 'Pantalón',
+                'items-1-quantity': '2',
+                'items-1-unit_price': '5000.00',
+            },
+        )
+        order = Order.objects.get(order_number='ORD-POST')
+
+        self.assertRedirects(response, reverse('orders'))
+        self.assertEqual(order.total, 13000)

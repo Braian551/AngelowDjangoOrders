@@ -32,26 +32,21 @@
             {% include 'orders/partials/order_field.html' with field=item_form.unit_price %}
         </div>
 
-        <!-- Campo para eliminar item existente. -->
+        <!-- Botón visible para eliminar o quitar productos; Django recibe DELETE oculto. -->
         <div class="col-lg-2 col-md-4">
-            {% if item_form.instance.pk %}
-                <div class="order-delete-box">
-                    <label class="form-label" for="{{ item_form.DELETE.id_for_label }}">
-                        Eliminar
-                    </label>
+            <div class="order-item-actions">
+                <div class="order-delete-control">
+                    {{ item_form.DELETE }}
+                </div>
 
-                    <div class="form-check">
-                        {{ item_form.DELETE }}
-                        <span class="form-check-label">
-                            Marcar
-                        </span>
-                    </div>
-                </div>
-            {% else %}
-                <div class="order-new-item-badge">
-                    Nuevo producto
-                </div>
-            {% endif %}
+                <button type="button" class="btn btn-outline-danger order-remove-item">
+                    {% if item_form.instance.pk %}
+                        Eliminar
+                    {% else %}
+                        Quitar
+                    {% endif %}
+                </button>
+            </div>
         </div>
 
     </div>

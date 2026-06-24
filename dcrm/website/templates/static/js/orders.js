@@ -7,6 +7,9 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const totalPreview = document.getElementById('orderCalculatedTotal');
+    const itemsList = document.querySelector('.order-items-list');
+    const emptyItemTemplate = document.getElementById('emptyOrderItemTemplate');
+    const totalFormsInput = document.querySelector('input[name="items-TOTAL_FORMS"]');
 
     if (!totalPreview) {
         return;
@@ -32,6 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let total = 0;
 
         document.querySelectorAll('[data-order-item]').forEach((item) => {
+            if (item.classList.contains('is-removing')) {
+                return;
+            }
+
             const deleteInput = item.querySelector('input[name$="-DELETE"]');
 
             if (deleteInput && deleteInput.checked) {
@@ -49,9 +56,61 @@ document.addEventListener('DOMContentLoaded', () => {
         totalPreview.textContent = formatMoney(total);
     };
 
-    document.querySelectorAll('[data-order-item] input').forEach((input) => {
-        input.addEventListener('input', calculateTotal);
-        input.addEventListener('change', calculateTotal);
+    const bindItemInputs = (item) => {
+        item.querySelectorAll('input').forEach((input) => {
+            input.addEventListener('input', calculateTotal);
+            input.addEventListener('change', calculateTotal);
+        });
+    };
+
+    const addOrderItem = () => {
+        if (!itemsList || !emptyItemTemplate || !totalFormsInput) {
+            return;
+        }
+
+        const formIndex = Number.parseInt(totalFormsInput.value, 10);
+        const html = emptyItemTemplate.innerHTML.replaceAll('__prefix__', formIndex);
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html.trim();
+        const newItem = wrapper.firstElementChild;
+
+        itemsList.appendChild(newItem);
+        totalFormsInput.value = String(formIndex + 1);
+        bindItemInputs(newItem);
+        calculateTotal();
+    };
+
+    const removeOrderItem = (item) => {
+        const deleteInput = item.querySelector('input[name$="-DELETE"]');
+
+        if (deleteInput) {
+            deleteInput.checked = true;
+        }
+
+        item.classList.add('is-removing');
+        calculateTotal();
+    };
+
+    document.querySelectorAll('[data-order-item]').forEach((item) => {
+        bindItemInputs(item);
+    });
+
+    document.addEventListener('click', (event) => {
+        const addButton = event.target.closest('#addOrderItem');
+        const removeButton = event.target.closest('.order-remove-item');
+
+        if (addButton) {
+            addOrderItem();
+            return;
+        }
+
+        if (removeButton) {
+            const item = removeButton.closest('[data-order-item]');
+
+            if (item) {
+                removeOrderItem(item);
+            }
+        }
     });
 
     calculateTotal();
