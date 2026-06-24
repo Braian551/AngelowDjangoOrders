@@ -37,7 +37,7 @@
             <div class="orders-card-header">
                 <div>
                     <h2>Datos del pedido</h2>
-                    <p>Información principal del pedido, estado, pago y total.</p>
+                    <p>Información principal del pedido, estado y pago.</p>
                 </div>
             </div>
 
@@ -56,6 +56,14 @@
                             {% include 'orders/partials/order_field.html' with field=field %}
                         </div>
                     {% endfor %}
+                </div>
+
+                <!-- Total calculado desde los productos: no se edita manualmente. -->
+                <div class="order-total-preview" aria-live="polite">
+                    <span>Total calculado</span>
+                    <strong id="orderCalculatedTotal">
+                        ${{ order.total|default:"0.00" }}
+                    </strong>
                 </div>
 
             </div>
@@ -107,4 +115,8 @@
 
 </section>
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/orders.js' %}"></script>
 {% endblock %}

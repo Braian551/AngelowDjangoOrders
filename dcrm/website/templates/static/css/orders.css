@@ -343,6 +343,31 @@ body {
     font-weight: 600;
 }
 
+/* Resumen del total derivado de productos, cantidad y precio. */
+.order-total-preview {
+    margin-top: 22px;
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    border: 1px solid var(--orders-border);
+    border-radius: 14px;
+    background: #f8fafc;
+}
+
+.order-total-preview span {
+    color: var(--orders-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.order-total-preview strong {
+    color: var(--orders-text);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
 /* Lista de productos en el formulario. */
 .order-items-list {
     display: flex;

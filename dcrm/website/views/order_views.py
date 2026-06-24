@@ -67,8 +67,8 @@ def create_order(request):
             # Las reservas dependen de los items finales guardados en la base de datos.
             sync_stock_reservations(order)
 
-            if order.items.exists():
-                order.calculate_total()
+            # El total del pedido siempre se deriva de los items guardados.
+            order.calculate_total()
 
             messages.success(request, 'Pedido creado correctamente.')
             return redirect('orders')
@@ -108,8 +108,8 @@ def update_order(request, order_id):
             # Después de editar items se actualizan reservas y total del pedido.
             sync_stock_reservations(order)
 
-            if order.items.exists():
-                order.calculate_total()
+            # El total del pedido siempre se deriva de los items guardados.
+            order.calculate_total()
 
             messages.success(request, 'Pedido actualizado correctamente.')
             return redirect('orders')

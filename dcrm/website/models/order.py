@@ -60,9 +60,10 @@ class Order(models.Model):
     def calculate_total(self):
         """Calcula el total sumando los subtotales de los ítems asociados."""
         # Convención ORM de Django: el modelo concentra datos y lógica de dominio.
-        if not self.pk or not self.items.exists():
+        if not self.pk:
             return self.total
 
+        # El total es derivado: si no hay ítems guardados, el valor correcto es cero.
         total = sum((item.subtotal for item in self.items.all()), Decimal('0.00'))
         self.total = total
         self.save(update_fields=['total', 'updated_at'])

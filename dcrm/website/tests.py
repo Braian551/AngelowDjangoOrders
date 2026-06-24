@@ -7,7 +7,7 @@ from django.test import Client, TestCase # Importa las clases de pruebas.
 from django.urls import reverse # Importa las funciones de URL.
 
 from website.forms import OrderForm, OrderItemForm, SignUpForm
-from website.models import Order
+from website.models import Order, OrderItem
 
 
 class HomeViewTests(TestCase): #
@@ -169,7 +169,8 @@ class OrderFormValidationTests(TestCase):
 
         self.assertFalse(form.is_valid())
         self.assertIn('Debes ingresar el número de pedido.', form.errors['order_number'])
-        self.assertIn('Debes ingresar el total del pedido.', form.errors['total'])
+        self.assertNotIn('total', form.fields)
+        self.assertNotIn('total', form.errors)
 
     def test_duplicate_order_number_uses_spanish_message(self):
         Order.objects.create(order_number='ORD-001', total='10.00')
@@ -179,7 +180,6 @@ class OrderFormValidationTests(TestCase):
                 'order_number': 'ord-001',
                 'status': Order.STATUS_PENDING,
                 'payment_status': Order.PAYMENT_PENDING,
-                'total': '20.00',
             }
         )
 
@@ -193,3 +193,33 @@ class OrderFormValidationTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('La cantidad es obligatoria.', form.errors['quantity'])
         self.assertIn('El precio unitario es obligatorio.', form.errors['unit_price'])
+
+    def test_order_total_is_calculated_from_items(self):
+        order = Order.objects.create(order_number='ORD-002')
+        OrderItem.objects.create(
+            order=order,
+            product_name='Camisa',
+            quantity=10,
+            unit_price='1000.00',
+        )
+        OrderItem.objects.create(
+            order=order,
+            product_name='Pantalón',
+            quantity=2,
+            unit_price='5000.00',
+        )
+
+        total = order.calculate_total()
+        order.refresh_from_db()
+
+        self.assertEqual(total, order.total)
+        self.assertEqual(order.total, 20000)
+
+    def test_order_total_becomes_zero_without_items(self):
+        order = Order.objects.create(order_number='ORD-003', total='999.00')
+
+        total = order.calculate_total()
+        order.refresh_from_db()
+
+        self.assertEqual(total, 0)
+        self.assertEqual(order.total, 0)

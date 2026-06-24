@@ -19,7 +19,8 @@ class OrderForm(forms.ModelForm):
     - número de pedido
     - estado del pedido
     - estado del pago
-    - total
+
+    El total no se edita manualmente: se calcula desde los items del pedido.
     """
 
     class Meta:
@@ -31,7 +32,6 @@ class OrderForm(forms.ModelForm):
             'order_number',
             'status',
             'payment_status',
-            'total',
         )
 
         # Etiquetas visibles para cada campo.
@@ -39,7 +39,6 @@ class OrderForm(forms.ModelForm):
             'order_number': 'Número de pedido',
             'status': 'Estado',
             'payment_status': 'Estado de pago',
-            'total': 'Total',
         }
 
         # Widgets controlan cómo se renderiza cada input en HTML.
@@ -61,13 +60,6 @@ class OrderForm(forms.ModelForm):
                     'class': 'form-select',
                 }
             ),
-            'total': forms.NumberInput(
-                attrs={
-                    'class': 'form-control',
-                    'placeholder': '0.00',
-                    'step': '0.01',
-                }
-            ),
         }
 
         # Mensajes de validación del pedido en español.
@@ -84,12 +76,6 @@ class OrderForm(forms.ModelForm):
             'payment_status': {
                 'required': 'Debes seleccionar el estado de pago.',
                 'invalid_choice': 'Selecciona un estado de pago válido.',
-            },
-            'total': {
-                'required': 'Debes ingresar el total del pedido.',
-                'invalid': 'Ingresa un total válido.',
-                'max_digits': 'El total no puede superar 10 dígitos.',
-                'max_decimal_places': 'El total solo puede tener 2 decimales.',
             },
         }
 
@@ -111,25 +97,6 @@ class OrderForm(forms.ModelForm):
             raise forms.ValidationError('Ya existe un pedido con ese número.')
 
         return order_number
-
-    def clean_total(self):
-        """
-        Valida que el total del pedido no sea negativo.
-
-        Django ejecuta automáticamente este método cuando llamas:
-        form.is_valid()
-        """
-        total = self.cleaned_data.get('total')
-
-        if total is None:
-            return total
-
-        # Evita guardar pedidos con valores negativos aunque el navegador no valide el input.
-        if total < Decimal('0.00'):
-            raise forms.ValidationError('El total no puede ser negativo.')
-
-        return total
-
 
 class OrderItemForm(forms.ModelForm):
     """

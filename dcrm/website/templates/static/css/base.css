@@ -38,3 +38,8 @@ body {
 .app-messages .alert strong {
     font-weight: 600;
 }
+
+/* Navbar principal del proyecto. */
+.angelow-navbar {
+    background: #2563eb;
+}
