@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">{{ page_title }}</h1>
+        <p class="text-muted mb-0">Gestiona la informacion general del pedido y sus productos en el mismo modulo web.</p>
+    </div>
+    <a href="{% url 'orders' %}" class="btn btn-outline-secondary">Volver</a>
+</div>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <strong>Datos del pedido</strong>
+        </div>
+        <div class="card-body">
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <div class="row g-3">
+                {% for field in form %}
+                <div class="col-md-6">
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <strong>Items del pedido</strong>
+        </div>
+        <div class="card-body">
+            {{ formset.management_form }}
+
+            {% if formset.non_form_errors %}
+            <div class="alert alert-danger">
+                {{ formset.non_form_errors }}
+            </div>
+            {% endif %}
+
+            {% for item_form in formset %}
+            {% for hidden in item_form.hidden_fields %}
+            {{ hidden }}
+            {% endfor %}
+
+            <div class="row g-3 align-items-end border-bottom pb-3 mb-3">
+                <div class="col-md-5">
+                    <label class="form-label" for="{{ item_form.product_name.id_for_label }}">{{ item_form.product_name.label }}</label>
+                    {{ item_form.product_name }}
+                    {% for error in item_form.product_name.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="{{ item_form.quantity.id_for_label }}">{{ item_form.quantity.label }}</label>
+                    {{ item_form.quantity }}
+                    {% for error in item_form.quantity.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="{{ item_form.unit_price.id_for_label }}">{{ item_form.unit_price.label }}</label>
+                    {{ item_form.unit_price }}
+                    {% for error in item_form.unit_price.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-1">
+                    {% if item_form.instance.pk %}
+                    <label class="form-label" for="{{ item_form.DELETE.id_for_label }}">Borrar</label>
+                    <div class="form-check pt-2">
+                        {{ item_form.DELETE }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+</form>
+{% endblock %}

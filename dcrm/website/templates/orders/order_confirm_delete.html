@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card shadow-sm mx-auto" style="max-width: 36rem;">
+    <div class="card-body p-4">
+        <h1 class="h4 mb-3">Eliminar pedido</h1>
+        <p class="mb-4">Desea eliminar el pedido <strong>{{ order.order_number }}</strong>?</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Si, eliminar</button>
+            <a href="{% url 'orders' %}" class="btn btn-outline-secondary">No</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
