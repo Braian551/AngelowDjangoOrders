@@ -1,35 +1,88 @@
 {% load static %}
-<!--#region encabezados-->
+
+<!-- #region encabezados -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Django✨</title>
-    <link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet">
 
+    <!-- Permite que la página sea responsive en celulares y pantallas pequeñas. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Django✨</title>
+
+    <!-- Bootstrap local cargado desde la carpeta static. -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
 </head>
-<!--#endregion-->
+<!-- #endregion -->
+
 <body>
     {# Navbar compartida por todas las pantallas del proyecto. #}
-    {% include 'navbar.html'%}
+    {% include 'navbar.html' %}
+
     <div class="container mt-4">
         <br>
 
-        {# Mensajes flash enviados desde las vistas con django.contrib.messages. #}
-        {%if messages%} {%for messages in messages%}
-        <div class=" alert alert-warning alert-dismissible" role="alert">
-                <strong>{{messages}}</strong>  Deberias revisar algunos de los campos , esta equivocado
-                <button type="button" class ="btn-close" data-bs-dismiss="alert" arial-label ="Close">
-                </button>
-            </div>
-            {%endfor%}
-        {%endif%}
+        <!-- {# 
+            Mensajes flash enviados desde las vistas con django.contrib.messages.
+
+            Ejemplos en Python:
+            messages.success(request, 'Registro exitoso.')
+            messages.error(request, 'Credenciales inválidas.')
+            messages.warning(request, 'Revisa los campos.')
+            messages.info(request, 'Información importante.')
+
+            Bootstrap usa:
+            success → verde
+            danger  → rojo
+            warning → amarillo
+            info    → azul
+        #} -->
+        {% if messages %}
+            {% for message in messages %}
+
+                {# Convierte el tag "error" de Django en "danger" de Bootstrap. #}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Error:</strong> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+
+                {% elif message.tags == 'success' %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>Éxito:</strong> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+
+                {% elif message.tags == 'warning' %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>Advertencia:</strong> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+
+                {% elif message.tags == 'info' %}
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        <strong>Información:</strong> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+
+                {% else %}
+                    <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                {% endif %}
+
+            {% endfor %}
+        {% endif %}
+
         {# Cada plantilla hija inyecta aquí su contenido principal. #}
         {% block content %}
         {% endblock %}
     </div>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}" ></script>
+
+    <!-- JavaScript de Bootstrap para que funcionen botones como cerrar alertas. -->
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>
