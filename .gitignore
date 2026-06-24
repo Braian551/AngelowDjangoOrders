@@ -39,6 +39,7 @@ static_collected/
 *.swp
 *.swo
 *.agents/
+*.codex/
 
 # Sistema operativo
 .DS_Store
