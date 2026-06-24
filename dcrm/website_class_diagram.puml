@@ -1,9 +1,16 @@
 @startuml
+title AngeloDjangoOrders - Diagrama de Clases, Patrones GoF y Convenciones Django
+
 skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+' =========================
+' MODELOS
+' =========================
 
 class Record {
     +id : bigint <<PK>>
-    +created_at : datetime
+    +created_at : timestamp
     +first_name : varchar(50)
     +last_name : varchar(50)
     +email : varchar(100)
@@ -12,26 +19,279 @@ class Record {
     +city : varchar(50)
     +state : varchar(50)
     +zip_code : varchar(10)
+
     +__str__()
 }
 
-class SignUpForm <<UserCreationForm>>
-class RecordForm <<ModelForm>>
+class Order {
+    +id : bigint <<PK>>
+    +order_number : varchar(20) <<UQ>>
+    +status : varchar(20)
+    +payment_status : varchar(20)
+    +total : decimal(10,2)
+    +created_at : timestamp
+    +updated_at : timestamp
 
-class WebsiteViews {
+    +calculate_total()
+    +change_status()
+    +__str__()
+}
+
+class OrderItem {
+    +id : bigint <<PK>>
+    +order_id : bigint <<FK>>
+    +product_name : varchar(100)
+    +quantity : int
+    +unit_price : decimal(10,2)
+
+    +subtotal()
+    +__str__()
+}
+
+class OrderStatusHistory {
+    +id : bigint <<PK>>
+    +order_id : bigint <<FK>>
+    +previous_status : varchar(20)
+    +new_status : varchar(20)
+    +previous_payment_status : varchar(20)
+    +new_payment_status : varchar(20)
+    +note : varchar(255)
+    +changed_at : timestamp
+
+    +__str__()
+}
+
+class StockReservation {
+    +id : bigint <<PK>>
+    +order_id : bigint <<FK>>
+    +order_item_id : bigint <<FK,UQ>>
+    +product_name : varchar(100)
+    +quantity : int
+    +status : varchar(20)
+    +created_at : timestamp
+    +updated_at : timestamp
+
+    +reserve()
+    +expire()
+    +release()
+    +__str__()
+}
+
+class OrderView {
+    +id : bigint <<PK>>
+    +order_id : bigint <<FK>>
+    +viewed_by : varchar(150)
+    +viewed_at : timestamp
+
+    +__str__()
+}
+
+' =========================
+' FORMULARIOS
+' =========================
+
+class SignUpForm <<ModelForm>> {
+    +email : EmailField
+    +first_name : CharField
+    +last_name : CharField
+}
+
+class RecordForm <<ModelForm>> {
+    +first_name : CharField
+    +last_name : CharField
+    +email : EmailField
+    +phone_number : CharField
+    +address : CharField
+    +city : CharField
+    +state : CharField
+    +zip_code : CharField
+}
+
+class OrderForm <<ModelForm>> {
+    +order_number : CharField
+    +status : ChoiceField
+    +payment_status : ChoiceField
+    +total : DecimalField
+
+    +clean_total()
+}
+
+class OrderItemForm <<ModelForm>> {
+    +product_name : CharField
+    +quantity : IntegerField
+    +unit_price : DecimalField
+
+    +clean_quantity()
+    +clean_unit_price()
+    +clean()
+}
+
+class OrderItemFormSet <<InlineFormSet>>
+
+' =========================
+' VISTAS, RUTAS Y PLANTILLAS
+' =========================
+
+class AuthViews <<FBV>> {
     +home()
     +login_user()
     +logout_user()
     +register_user()
+}
+
+class RecordViews <<FBV>> {
     +customer_record()
     +delete_record()
     +update_record()
-    +paginate_records()
 }
 
+class OrderViews <<FBV>> {
+    +list_orders()
+    +create_order()
+    +update_order()
+    +delete_order()
+    +sync_stock_reservations()
+    +record_order_view()
+}
+
+class RolePolicy <<Helper>> {
+    +is_admin_user()
+    +get_login_redirect_url()
+}
+
+class UrlRouter <<Django Router>> {
+    +urlpatterns
+}
+
+class Templates <<Django Template>> {
+    +base.html
+    +home.html
+    +orders/order_list.html
+    +orders/order_form.html
+    +orders/order_confirm_delete.html
+}
+
+class OrderSignals <<Observer>> {
+    +capture_previous_order_state()
+    +create_order_status_history()
+}
+
+class DjangoAdmin <<Django Admin>> {
+    +register()
+}
+
+' =========================
+' RELACIONES UML
+' =========================
+
+Order "1" *-- "0..*" OrderItem : composición
+Order "1" o-- "0..*" OrderStatusHistory : historial
+Order "1" *-- "0..*" StockReservation : reservas
+Order "1" --> "0..*" OrderView : visualizaciones
+OrderItem "1" --> "0..1" StockReservation : reserva
+
 RecordForm ..> Record : usa
-WebsiteViews ..> Record : CRUD
-WebsiteViews ..> SignUpForm : registro
-WebsiteViews ..> RecordForm : edicion
+OrderForm ..> Order : usa
+OrderItemForm ..> OrderItem : usa
+OrderItemFormSet ..> OrderItemForm : agrupa
+
+AuthViews ..> SignUpForm : registro
+AuthViews ..> Record : dashboard
+RecordViews ..> RecordForm : clientes
+RecordViews ..> Record : CRUD
+OrderViews ..> OrderForm : pedidos
+OrderViews ..> OrderItemFormSet : items
+OrderViews ..> Order : CRUD
+OrderViews ..> OrderView : seguimiento
+OrderViews ..> StockReservation : stock
+OrderViews ..> RolePolicy : permisos Admin
+AuthViews ..> RolePolicy : redirección login
+
+UrlRouter ..> AuthViews : enruta
+UrlRouter ..> RecordViews : enruta
+UrlRouter ..> OrderViews : enruta
+
+AuthViews ..> Templates : renderiza
+RecordViews ..> Templates : renderiza
+OrderViews ..> Templates : renderiza
+
+OrderSignals ..> Order : observa
+OrderSignals ..> OrderStatusHistory : crea
+
+DjangoAdmin ..> Record : registra
+DjangoAdmin ..> Order : registra
+DjangoAdmin ..> OrderItem : registra
+DjangoAdmin ..> OrderStatusHistory : registra
+DjangoAdmin ..> StockReservation : registra
+DjangoAdmin ..> OrderView : registra
+
+' =========================
+' NOTAS DE PATRONES GOF Y CONVENCIONES DJANGO
+' =========================
+
+note right of Order
+Convención Django ORM:
+el modelo guarda datos y lógica
+como calculate_total().
+
+Relacionado con State (GoF):
+status y payment_status representan
+fases del pedido. Es una versión simple
+con choices, no clases de estado.
+end note
+
+note right of OrderSignals
+Patrón GoF: Observer.
+Django emite pre_save/post_save
+y signals.py reacciona creando
+historial sin acoplar cada vista.
+end note
+
+note right of OrderForm
+Convención Django: ModelForm.
+el formulario se construye desde
+el modelo y concentra validación
+de datos de entrada.
+end note
+
+note right of OrderItemFormSet
+Convención Django: FormSet.
+agrupa varios OrderItemForm para
+editar una relación uno-a-muchos
+en una sola pantalla.
+end note
+
+note right of UrlRouter
+Convención Django: URL routing.
+urlpatterns decide qué vista atiende
+cada URL pública del proyecto.
+end note
+
+note right of Templates
+Convención Django: Template.
+las plantillas contienen presentación
+y reciben datos preparados por vistas.
+end note
+
+note right of OrderViews
+Arquitectura Django MTV + PRG:
+las vistas coordinan modelos,
+formularios y templates, y redirigen
+después de POST exitosos.
+end note
+
+note bottom of OrderViews
+Patrón GoF: Decorator.
+login_required y user_passes_test
+envuelven las vistas para exigir
+autenticación y rol Admin.
+end note
+
+note right of RolePolicy
+Política de roles:
+Admin = is_staff o is_superuser.
+Cliente = usuario normal.
+No usa grupos de Django.
+end note
 
 @enduml

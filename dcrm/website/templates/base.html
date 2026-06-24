@@ -12,10 +12,12 @@
 </head>
 <!--#endregion-->
 <body>
+    {# Navbar compartida por todas las pantallas del proyecto. #}
     {% include 'navbar.html'%}
     <div class="container mt-4">
         <br>
 
+        {# Mensajes flash enviados desde las vistas con django.contrib.messages. #}
         {%if messages%} {%for messages in messages%}
         <div class=" alert alert-warning alert-dismissible" role="alert">
                 <strong>{{messages}}</strong>  Deberias revisar algunos de los campos , esta equivocado
@@ -24,6 +26,7 @@
             </div>
             {%endfor%}
         {%endif%}
+        {# Cada plantilla hija inyecta aquí su contenido principal. #}
         {% block content %}
         {% endblock %}
     </div>

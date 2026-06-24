@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'website.apps.WebsiteConfig',
 ]
 
+# El orden del middleware es importante: sesión y autenticación deben cargar antes de mensajes.
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -97,6 +98,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
+    # Los archivos estáticos viven dentro de templates/static en este proyecto.
     os.path.join(BASE_DIR, 'website', 'templates', 'static'),
 ]
 

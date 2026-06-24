@@ -11,6 +11,7 @@ import os
 
 from django.core.asgi import get_asgi_application
 
+# Configuración usada por servidores ASGI para aplicaciones asíncronas.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dcrm.settings')
 
 application = get_asgi_application()

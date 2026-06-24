@@ -7,6 +7,8 @@ from django.db import models
 class Order(models.Model):
     """Modelo para representar un pedido dentro del sistema."""
 
+    # Relacionado con State del catálogo GoF: el pedido cambia de fase por estado.
+    # Aquí se usa una implementación simple con choices, no clases de estado separadas.
     STATUS_PENDING = 'pending'
     STATUS_PROCESSING = 'processing'
     STATUS_COMPLETED = 'completed'
@@ -18,6 +20,7 @@ class Order(models.Model):
         (STATUS_CANCELLED, 'Cancelado'),
     ]
 
+    # Estado del pago: misma idea de State, controlada con valores permitidos.
     PAYMENT_PENDING = 'pending'
     PAYMENT_PAID = 'paid'
     PAYMENT_FAILED = 'failed'
@@ -56,6 +59,7 @@ class Order(models.Model):
 
     def calculate_total(self):
         """Calcula el total sumando los subtotales de los ítems asociados."""
+        # Convención ORM de Django: el modelo concentra datos y lógica de dominio.
         if not self.pk or not self.items.exists():
             return self.total
 
@@ -66,6 +70,7 @@ class Order(models.Model):
 
     def change_status(self, new_status, new_payment_status=None, note=''):
         """Cambia el estado del pedido y registra el movimiento en el historial."""
+        # Centralizar el cambio de estado evita transiciones inválidas desde otras capas.
         valid_statuses = dict(self.STATUS_CHOICES)
         valid_payment_statuses = dict(self.PAYMENT_STATUS_CHOICES)
 
@@ -128,6 +133,7 @@ class OrderItem(models.Model):
 class OrderStatusHistory(models.Model):
     """Modelo para registrar cada cambio de estado de un pedido."""
 
+    # Bitácora de auditoría: conserva cambios sin sobrescribir datos anteriores.
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='status_history')
     previous_status = models.CharField(max_length=20, choices=Order.STATUS_CHOICES, blank=True)
     new_status = models.CharField(max_length=20, choices=Order.STATUS_CHOICES)
@@ -153,6 +159,7 @@ class OrderStatusHistory(models.Model):
 class StockReservation(models.Model):
     """Modelo para representar una reserva de stock asociada a un ítem."""
 
+    # Estado de reserva: implementación simple relacionada con State mediante choices.
     STATUS_RESERVED = 'reserved'
     STATUS_EXPIRED = 'expired'
     STATUS_RELEASED = 'released'

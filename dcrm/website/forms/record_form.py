@@ -8,6 +8,7 @@ from website.models import Record
 class RecordForm(forms.ModelForm):
     """Formulario para crear o actualizar la información de un cliente."""
 
+    # Se declaran los campos para controlar placeholders y clases Bootstrap desde Python.
     first_name = forms.CharField(
         label='',
         widget=forms.TextInput(
@@ -65,6 +66,7 @@ class RecordForm(forms.ModelForm):
     )
 
     class Meta:
+        # Mantener esta lista explícita evita exponer campos no deseados en el formulario.
         model = Record
         fields = (
             'first_name',

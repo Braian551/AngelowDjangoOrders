@@ -8,6 +8,7 @@ from website.models import Record
 
 def customer_record(request, pk):
     """Muestra el detalle de un cliente solo si el usuario inició sesión."""
+    # Estas vistas usan validación manual para conservar el flujo actual del proyecto.
     if request.user.is_authenticated:
         customer_record = get_object_or_404(Record, id=pk)
         return render(request, 'record.html', {'customer_record': customer_record})
@@ -19,6 +20,7 @@ def customer_record(request, pk):
 def delete_record(request, pk):
     """Elimina un registro de cliente cuando el usuario está autenticado."""
     if request.user.is_authenticated:
+        # get_object_or_404 evita fallos si el ID no existe y devuelve una respuesta 404.
         delete_it = get_object_or_404(Record, id=pk)
         delete_it.delete()
         messages.success(request, "registro eliminado correctamente")
@@ -32,6 +34,7 @@ def update_record(request, pk):
     """Actualiza los datos de un cliente existente."""
     if request.user.is_authenticated:
         current_record = get_object_or_404(Record, id=pk)
+        # request.POST or None permite reutilizar el mismo formulario para GET y POST.
         form = RecordForm(request.POST or None, instance=current_record)
 
         if form.is_valid():

@@ -10,6 +10,10 @@ class OrderForm(forms.ModelForm):
     """
     Formulario principal para crear o actualizar un pedido.
 
+    Convención Django: ModelForm.
+    No es un patrón GoF del catálogo, pero Django lo usa para crear formularios
+    desde modelos y concentrar validación de entrada.
+
     Este formulario trabaja con el modelo Order.
     Aquí se editan los datos generales del pedido, como:
     - número de pedido
@@ -75,6 +79,7 @@ class OrderForm(forms.ModelForm):
         """
         total = self.cleaned_data['total']
 
+        # Evita guardar pedidos con valores negativos aunque el navegador no valide el input.
         if total < Decimal('0.00'):
             raise forms.ValidationError('El total no puede ser negativo.')
 
@@ -84,6 +89,9 @@ class OrderForm(forms.ModelForm):
 class OrderItemForm(forms.ModelForm):
     """
     Formulario para cada item/producto dentro de un pedido.
+
+    Convención Django: ModelForm especializado.
+    Permite validar cada producto antes de convertirlo en OrderItem.
 
     Este formulario trabaja con el modelo OrderItem.
     Se usa dentro de un formset porque un pedido puede tener varios items.
@@ -205,6 +213,7 @@ class OrderItemForm(forms.ModelForm):
         unit_price = cleaned_data.get('unit_price')
 
         # Detecta si el usuario escribió algo en la fila.
+        # Esto permite filas extra vacías sin obligar al usuario a completarlas.
         has_any_value = any(
             value not in (None, '')
             for value in (product_name, quantity, unit_price)
@@ -227,6 +236,8 @@ class OrderItemForm(forms.ModelForm):
         return cleaned_data
 
 
+# Convención Django: FormSet.
+# No pertenece al catálogo GoF; agrupa formularios hijos para una relación uno-a-muchos.
 # FormSet para manejar varios OrderItem dentro de un mismo Order.
 #
 # Esto permite que en una sola pantalla puedas:

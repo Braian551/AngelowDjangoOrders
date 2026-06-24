@@ -4,6 +4,10 @@ from django.dispatch import receiver
 from website.models import Order, OrderStatusHistory
 
 
+# Patrón GoF de comportamiento: Observer.
+# Django dispara señales y estas funciones reaccionan sin acoplarse a cada vista.
+# Estas señales mantienen el historial aunque el pedido se guarde desde admin,
+# vistas, shell o cualquier otro punto del proyecto.
 @receiver(pre_save, sender=Order)
 def capture_previous_order_state(sender, instance, **kwargs):
     """

@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 class SignUpForm(UserCreationForm):
     """Formulario personalizado para registrar usuarios en el sistema."""
 
+    # Campos adicionales al formulario base de Django para completar el perfil inicial.
     email = forms.EmailField(
         label='',
         widget=forms.EmailInput(
@@ -31,6 +32,7 @@ class SignUpForm(UserCreationForm):
 
     class Meta:
         model = User
+        # Define el orden en que los campos aparecen al renderizar `form.as_p`.
         fields = (
             'username',
             'first_name',
@@ -44,6 +46,7 @@ class SignUpForm(UserCreationForm):
         """Ajusta etiquetas, ayudas y clases CSS de los campos heredados."""
         super().__init__(*args, **kwargs)
 
+        # Los campos heredados no se pueden personalizar arriba, por eso se ajustan aquí.
         self.fields['username'].widget.attrs.update(
             {'class': 'form-control', 'placeholder': 'Nombre de usuario'}
         )

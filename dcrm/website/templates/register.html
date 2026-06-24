@@ -2,6 +2,7 @@
 
 
 {% block content %}
+{# Formulario de alta de usuario basado en SignUpForm. #}
 <h1>Registro nuevo usuario ✍🏼</h1>
 <br />
 
@@ -10,6 +11,7 @@
     {% csrf_token %}
    
     {% if form.errors %}
+    {# Muestra errores agrupados para que el usuario pueda corregir el registro. #}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         <strong>Error de registro:</strong> por favor revise los datos ingresados.
         <ul>

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{# Encabezado del módulo de pedidos y acceso rápido al formulario de creación. #}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1 class="h3 mb-1">Modulo de pedidos</h1>
@@ -9,6 +10,7 @@
     <a href="{% url 'create_order' %}" class="btn btn-primary">Crear pedido</a>
 </div>
 
+{# Tabla principal: usa los items precargados desde la vista para evitar consultas extra. #}
 <div class="card shadow-sm">
     <div class="table-responsive">
         <table class="table table-hover mb-0 align-middle">
@@ -24,6 +26,7 @@
                 </tr>
             </thead>
             <tbody>
+                {# Si no existen pedidos, el bloque empty muestra un estado vacío amigable. #}
                 {% for order in orders %}
                 <tr>
                     <td>{{ order.id }}</td>
