@@ -1,23 +1,60 @@
 <nav class="navbar navbar-expand-lg navbar-dark angelow-navbar">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'home' %}">Angelow</a>
-    {# Botón responsive de Bootstrap para abrir el menú en pantallas pequeñas. #}
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand angelow-brand" href="{% url 'home' %}">Angelow</a>
+    {# Menu hamburguesa responsive: en movil abre el panel de navegacion. #}
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#angelowMainMenu" aria-controls="angelowMainMenu" aria-expanded="false" aria-label="Abrir menu">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        {# La navegación cambia según exista una sesión activa. #}
+
+    <div class="collapse navbar-collapse" id="angelowMainMenu">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 angelow-menu">
+        {# La navegacion cambia segun exista una sesion activa y usa dropdown para variar el menu. #}
         {% if user.is_authenticated %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'logout' %}">Cerrar Usuario</a>
+          <a class="nav-link" href="{% url 'home' %}">Dashboard</a>
+        </li>
+
+        {% if user.is_staff or user.is_superuser %}
+        <li class="nav-item dropdown angelow-mega-item">
+          <a class="nav-link dropdown-toggle" href="#" id="angelowOperationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Gestion
+          </a>
+          <div class="dropdown-menu angelow-mega-menu" aria-labelledby="angelowOperationsDropdown">
+            <div class="angelow-mega-grid">
+              <div class="angelow-mega-section">
+                <span class="angelow-mega-title">Pedidos</span>
+                <a class="dropdown-item" href="{% url 'orders' %}">Listado de pedidos</a>
+                <a class="dropdown-item" href="{% url 'create_order' %}">Crear pedido</a>
+              </div>
+              <div class="angelow-mega-section">
+                <span class="angelow-mega-title">Clientes</span>
+                <a class="dropdown-item" href="{% url 'home' %}">Registros recientes</a>
+              </div>
+            </div>
+          </div>
         </li>
         {% else %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'register' %}">Registrar</a>
+          <a class="nav-link" href="{% url 'home' %}">Mis registros</a>
+        </li>
+        {% endif %}
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="angelowAccountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Cuenta
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="angelowAccountDropdown">
+            <li><span class="dropdown-item-text">{{ user.username }}</span></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesion</a></li>
+          </ul>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'login' %}">Iniciar sesion</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'home' %}">Iniciar sesion</a>
+          <a class="nav-link" href="{% url 'register' %}">Registrar</a>
         </li>
         {% endif %}
       </ul>

@@ -1,0 +1,17 @@
+.git
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env
+.env.*
+staticfiles
+static_collected
+media
+.vscode
+.idea
+.agents
+.codex
+*.log

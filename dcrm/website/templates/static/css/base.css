@@ -41,5 +41,71 @@ body {
 
 /* Navbar principal del proyecto. */
 .angelow-navbar {
-    background: #2563eb;
+    background: #016bff;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
+}
+
+.angelow-brand {
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+.angelow-menu .nav-link {
+    border-radius: 8px;
+    font-weight: 500;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+
+.angelow-menu .nav-link:hover,
+.angelow-menu .nav-link:focus {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.angelow-mega-item {
+    position: static;
+}
+
+.angelow-mega-menu {
+    border: 0;
+    border-radius: 8px;
+    box-shadow: var(--app-shadow);
+    min-width: min(520px, calc(100vw - 32px));
+    padding: 18px;
+}
+
+.angelow-mega-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.angelow-mega-title {
+    color: #475569;
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.angelow-mega-section .dropdown-item {
+    border-radius: 8px;
+    padding: 8px 10px;
+}
+
+@media (max-width: 991.98px) {
+    .angelow-menu {
+        padding-top: 12px;
+    }
+
+    .angelow-mega-menu {
+        box-shadow: none;
+        min-width: 100%;
+        padding: 10px;
+    }
+
+    .angelow-mega-grid {
+        grid-template-columns: 1fr;
+    }
 }

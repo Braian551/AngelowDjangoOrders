@@ -1,0 +1,45 @@
+name: angelow
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: angelow-web
+    command: sh /app/docker/entrypoint.sh
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_DB_NAME: clientes
+      DJANGO_DB_USER: angelow
+      DJANGO_DB_PASSWORD: angelow_password
+      DJANGO_DB_HOST: db
+      DJANGO_DB_PORT: 3306
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+
+  db:
+    image: mysql:8.4
+    container_name: angelow-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: clientes
+      MYSQL_USER: angelow
+      MYSQL_PASSWORD: angelow1234
+      MYSQL_ROOT_PASSWORD: angelow1234
+    ports:
+      - "3307:3306"
+    volumes:
+      - angelow_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "angelow", "-pangelow_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  angelow_mysql_data:
