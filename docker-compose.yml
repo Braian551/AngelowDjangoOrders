@@ -28,8 +28,8 @@ services:
     environment:
       MYSQL_DATABASE: clientes
       MYSQL_USER: angelow
-      MYSQL_PASSWORD: angelow1234
-      MYSQL_ROOT_PASSWORD: angelow1234
+      MYSQL_PASSWORD: angelow_password
+      MYSQL_ROOT_PASSWORD: root_password
     ports:
       - "3307:3306"
     volumes:
