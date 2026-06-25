@@ -6,7 +6,7 @@ from django.contrib.messages import get_messages
 from django.test import Client, TestCase # Importa las clases de pruebas.
 from django.urls import reverse # Importa las funciones de URL.
 
-from website.forms import OrderForm, OrderItemForm, SignUpForm
+from website.forms import OrderForm, OrderItemForm, RecordForm, SignUpForm
 from website.models import Order, OrderItem
 
 
@@ -33,6 +33,15 @@ class SecuritySettingsTests(TestCase): # esta clase se ejecuta antes de las prue
     def test_project_uses_custom_csrf_failure_view(self):
         # El error CSRF debe volver a la app con mensaje claro, no mostrar el 403 técnico.
         self.assertEqual(settings.CSRF_FAILURE_VIEW, 'website.views.csrf_failure')
+
+    def test_project_has_four_security_layers_configured(self):
+        # Estas opciones documentan capas técnicas evaluables en la checklist.
+        self.assertTrue(settings.SESSION_COOKIE_HTTPONLY)
+        self.assertEqual(settings.SESSION_COOKIE_SAMESITE, 'Lax')
+        self.assertTrue(settings.CSRF_COOKIE_HTTPONLY)
+        self.assertEqual(settings.CSRF_COOKIE_SAMESITE, 'Lax')
+        self.assertEqual(settings.X_FRAME_OPTIONS, 'DENY')
+        self.assertTrue(settings.SECURE_CONTENT_TYPE_NOSNIFF)
 
 
 class LoginFlowTests(TestCase): # Esta clase se ejecuta antes de las pruebas
@@ -171,6 +180,50 @@ class SignUpFormValidationTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('Las contraseñas no coinciden.', form.errors['password2'])
 
+    def test_critical_registration_fields_reject_unsafe_characters(self):
+        form = SignUpForm(
+            data={
+                'username': 'cliente<script>',
+                'first_name': 'Cliente1',
+                'last_name': 'Prueba',
+                'email': 'cliente@example.com',
+                'password1': 'clave<script>',
+                'password2': 'clave<script>',
+            }
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            'El usuario solo puede contener letras, números y los caracteres . _ + -.',
+            form.errors['username'],
+        )
+        self.assertIn('Solo se permiten letras y espacios.', form.errors['first_name'])
+        self.assertIn(
+            'La contraseña solo puede contener letras, números y los caracteres @ . + - _.',
+            form.errors['password1'],
+        )
+
+
+class RecordFormValidationTests(TestCase):
+    """Verifica regex de seguridad en datos de clientes."""
+
+    def test_record_form_rejects_unexpected_special_characters(self):
+        form = RecordForm(
+            data={
+                'first_name': 'Ana<script>',
+                'last_name': 'Gómez',
+                'email': 'ana@example.com',
+                'phone_number': '3001234567',
+                'address': 'Calle 10 # 20-30',
+                'city': 'Medellín',
+                'state': 'Antioquia',
+                'zip_code': '05001',
+            }
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('Solo se permiten letras y espacios.', form.errors['first_name'])
+
 
 class OrderFormValidationTests(TestCase):
     """Verifica mensajes de pedidos en español."""
@@ -197,6 +250,21 @@ class OrderFormValidationTests(TestCase):
 
         self.assertFalse(form.is_valid())
         self.assertIn('Ya existe un pedido con ese número.', form.errors['order_number'])
+
+    def test_order_number_rejects_unexpected_special_characters(self):
+        form = OrderForm(
+            data={
+                'order_number': 'ORD<script>',
+                'status': Order.STATUS_PENDING,
+                'payment_status': Order.PAYMENT_PENDING,
+            }
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            'El número de pedido solo puede contener letras, números y guion.',
+            form.errors['order_number'],
+        )
 
     def test_started_order_item_requires_complete_row_in_spanish(self):
         # Si el usuario empieza una fila de producto, se exige completarla en español.

@@ -3,6 +3,23 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
+
+
+name_validator = RegexValidator(
+    regex=r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$',
+    message='Solo se permiten letras y espacios.',
+)
+
+username_validator = RegexValidator(
+    regex=r'^[A-Za-z0-9_.+-]+$',
+    message='El usuario solo puede contener letras, números y los caracteres . _ + -.',
+)
+
+safe_password_validator = RegexValidator(
+    regex=r'^[A-Za-z0-9@.+\-_]+$',
+    message='La contraseña solo puede contener letras, números y los caracteres @ . + - _.',
+)
 
 
 class SignUpForm(UserCreationForm):
@@ -29,6 +46,7 @@ class SignUpForm(UserCreationForm):
     first_name = forms.CharField(
         label='Nombre',
         required=True,
+        validators=[name_validator],
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Nombre'}
         ),
@@ -40,6 +58,7 @@ class SignUpForm(UserCreationForm):
     last_name = forms.CharField(
         label='Apellido',
         required=True,
+        validators=[name_validator],
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Apellido'}
         ),
@@ -77,6 +96,8 @@ class SignUpForm(UserCreationForm):
             {'class': 'form-control', 'placeholder': 'Nombre de usuario'}
         )
         self.fields['username'].label = 'Usuario'
+        # Seguridad en campo crítico: se limita la entrada con regex explícita.
+        self.fields['username'].validators.append(username_validator)
         self.fields['username'].error_messages.update(
             {
                 'required': 'Debes ingresar un nombre de usuario.',
@@ -133,3 +154,14 @@ class SignUpForm(UserCreationForm):
             raise forms.ValidationError('Las contraseñas no coinciden.')
 
         return password2
+
+    def clean_password1(self):
+        """
+        Aplica una lista segura de caracteres para el campo crítico de contraseña.
+        """
+        password1 = self.cleaned_data.get('password1')
+
+        if password1:
+            safe_password_validator(password1)
+
+        return password1

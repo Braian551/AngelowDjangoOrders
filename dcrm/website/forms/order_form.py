@@ -1,9 +1,21 @@
 from decimal import Decimal
 
 from django import forms
+from django.core.validators import RegexValidator
 from django.forms import inlineformset_factory
 
 from website.models import Order, OrderItem
+
+
+order_number_validator = RegexValidator(
+    regex=r'^[A-Za-z0-9-]+$',
+    message='El número de pedido solo puede contener letras, números y guion.',
+)
+
+product_name_validator = RegexValidator(
+    regex=r'^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ\s.,-]+$',
+    message='El producto contiene caracteres no permitidos.',
+)
 
 
 class OrderForm(forms.ModelForm):
@@ -79,6 +91,11 @@ class OrderForm(forms.ModelForm):
             },
         }
 
+    def __init__(self, *args, **kwargs):
+        """Agrega validación regex al número de pedido sin duplicarla en la vista."""
+        super().__init__(*args, **kwargs)
+        self.fields['order_number'].validators.append(order_number_validator)
+
     def clean_order_number(self):
         """
         Valida que el número público del pedido sea único con un mensaje en español.
@@ -122,6 +139,9 @@ class OrderItemForm(forms.ModelForm):
         # Luego en clean() validamos si el usuario empezó a llenar la fila.
         for field_name in ('product_name', 'quantity', 'unit_price'):
             self.fields[field_name].required = False
+
+        # Seguridad de entrada: el producto acepta solo caracteres esperados.
+        self.fields['product_name'].validators.append(product_name_validator)
 
         # Si el item todavía no existe en base de datos,
         # evitamos que cantidad y precio aparezcan con valores por defecto.

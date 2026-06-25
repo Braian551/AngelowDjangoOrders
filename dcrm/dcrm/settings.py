@@ -120,4 +120,19 @@ SESSION_COOKIE_AGE = 1209600
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 
+# Capas de seguridad del entregable:
+# 1. Autenticación/autorización por roles en vistas protegidas.
+# 2. CSRF activo en formularios y vista personalizada de error.
+# 3. Cookies de sesión/CSRF endurecidas contra lectura por scripts y envío cross-site.
+# 4. Cabeceras de navegador para reducir clickjacking, MIME sniffing y fuga de referer.
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+X_FRAME_OPTIONS = 'DENY'
 SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = 'same-origin'
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin'
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'

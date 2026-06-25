@@ -1,8 +1,30 @@
 #
 
 from django import forms
+from django.core.validators import RegexValidator
 
 from website.models import Record
+
+
+name_validator = RegexValidator(
+    regex=r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$',
+    message='Solo se permiten letras y espacios.',
+)
+
+phone_validator = RegexValidator(
+    regex=r'^[0-9+\-\s]+$',
+    message='Solo se permiten números, espacios y los caracteres + -.',
+)
+
+address_validator = RegexValidator(
+    regex=r'^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ\s#.,-]+$',
+    message='La dirección contiene caracteres no permitidos.',
+)
+
+zip_code_validator = RegexValidator(
+    regex=r'^[A-Za-z0-9-]+$',
+    message='El código postal solo puede contener letras, números y guion.',
+)
 
 
 class RecordForm(forms.ModelForm):
@@ -11,6 +33,7 @@ class RecordForm(forms.ModelForm):
     # Se declaran los campos para controlar placeholders y clases Bootstrap desde Python.
     first_name = forms.CharField(
         label='',
+        validators=[name_validator],
         widget=forms.TextInput(
             attrs={'placeholder': 'Nombre', 'class': 'form-control'}
         ),
@@ -18,6 +41,7 @@ class RecordForm(forms.ModelForm):
 
     last_name = forms.CharField(
         label='',
+        validators=[name_validator],
         widget=forms.TextInput(
             attrs={'placeholder': 'Apellido', 'class': 'form-control'}
         ),
@@ -32,6 +56,7 @@ class RecordForm(forms.ModelForm):
 
     phone_number = forms.CharField(
         label='',
+        validators=[phone_validator],
         widget=forms.TextInput(
             attrs={'placeholder': 'Número de teléfono', 'class': 'form-control'}
         ),
@@ -39,6 +64,7 @@ class RecordForm(forms.ModelForm):
 
     address = forms.CharField(
         label='',
+        validators=[address_validator],
         widget=forms.TextInput(
             attrs={'placeholder': 'Dirección', 'class': 'form-control'}
         ),
@@ -46,6 +72,7 @@ class RecordForm(forms.ModelForm):
 
     city = forms.CharField(
         label='',
+        validators=[name_validator],
         widget=forms.TextInput(
             attrs={'placeholder': 'Ciudad', 'class': 'form-control'}
         ),
@@ -53,6 +80,7 @@ class RecordForm(forms.ModelForm):
 
     state = forms.CharField(
         label='',
+        validators=[name_validator],
         widget=forms.TextInput(
             attrs={'placeholder': 'Estado', 'class': 'form-control'}
         ),
@@ -60,6 +88,7 @@ class RecordForm(forms.ModelForm):
 
     zip_code = forms.CharField(
         label='',
+        validators=[zip_code_validator],
         widget=forms.TextInput(
             attrs={'placeholder': 'Código postal', 'class': 'form-control'}
         ),
