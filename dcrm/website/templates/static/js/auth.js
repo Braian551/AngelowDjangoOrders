@@ -32,6 +32,6 @@ passwordToggleButtons.forEach(function (button) {
         const isPasswordHidden = passwordInput.type === 'password';
 
         passwordInput.type = isPasswordHidden ? 'text' : 'password';
-        this.textContent = isPasswordHidden ? 'Ocultar' : 'Ver';
+        this.textContent = isPasswordHidden ? '🙈' : '👁️';
     });
 });
