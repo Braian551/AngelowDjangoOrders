@@ -1,0 +1,37 @@
+@startuml
+title Patron Observer - Historial automatico de pedidos
+
+skinparam shadowing false
+skinparam linetype ortho
+skinparam defaultFontName Arial
+
+actor "Usuario/Admin" as User
+
+participant "Vista/Admin/Shell" as Client
+participant "Order\n(models.Model)" as Order
+participant "Django Signals\npre_save/post_save" as Signals
+participant "capture_previous_order_state()" as PreSave
+participant "create_order_status_history()" as PostSave
+database "OrderStatusHistory" as History
+
+User -> Client : crea o actualiza pedido
+Client -> Order : save()
+Order -> Signals : emite pre_save
+Signals -> PreSave : notifica cambio pendiente
+PreSave -> Order : consulta estado anterior
+Order -> Signals : emite post_save
+Signals -> PostSave : notifica pedido guardado
+PostSave -> History : crea registro si cambio estado/pago
+
+note right of Signals
+GoF Observer:
+Django actua como sujeto/event bus
+y las funciones receiver son observadores.
+end note
+
+note bottom of PostSave
+La auditoria queda desacoplada de las vistas:
+tambien funciona desde admin, shell o tests.
+end note
+
+@enduml

@@ -1,0 +1,38 @@
+@startuml
+title Patron Decorator - Proteccion de vistas de pedidos
+
+skinparam shadowing false
+skinparam linetype ortho
+skinparam defaultFontName Arial
+
+actor "Admin" as Admin
+
+rectangle "Peticion HTTP" as Request
+rectangle "never_cache" as NeverCache
+rectangle "ensure_csrf_cookie" as Csrf
+rectangle "login_required" as Login
+rectangle "user_passes_test(is_admin_user)" as Role
+rectangle "create_order()\nupdate_order()\ndelete_order()" as View
+database "Modelos y formularios" as Models
+
+Admin --> Request
+Request --> NeverCache
+NeverCache --> Csrf
+Csrf --> Login
+Login --> Role
+Role --> View
+View --> Models
+
+note right of Login
+GoF Decorator:
+cada decorador agrega una responsabilidad
+sin cambiar el cuerpo de la vista.
+end note
+
+note bottom of Role
+Autenticacion, autorizacion,
+CSRF y cache quedan separados
+del flujo de negocio.
+end note
+
+@enduml

@@ -19,3 +19,8 @@ Los diagramas se encuentran en la carpeta `docs/uml/`:
 - `docs/uml/c4_codigo.puml`
 
 Tambien se incluye el analisis archivo por archivo en `docs/analisis_archivos.md`.
+
+## Patrones de diseno
+
+La documentacion de patrones esta en `docs/patrones/patrones_diseno.md`.
+Incluye 10 patrones/convenios y 4 diagramas UML en PlantUML.

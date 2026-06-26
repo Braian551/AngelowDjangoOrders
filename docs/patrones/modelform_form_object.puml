@@ -1,0 +1,69 @@
+@startuml
+title Patron ModelForm / Form Object - Validacion antes de persistir
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+skinparam defaultFontName Arial
+
+class OrderForm <<ModelForm>> {
+  +clean_order_number()
+  +save()
+}
+
+class OrderItemForm <<ModelForm>> {
+  +clean_quantity()
+  +clean_unit_price()
+  +clean()
+  +save()
+}
+
+class RecordForm <<ModelForm>>
+class SignUpForm <<UserCreationForm>>
+
+class Order {
+  +order_number
+  +status
+  +payment_status
+}
+
+class OrderItem {
+  +product_name
+  +quantity
+  +unit_price
+}
+
+class Record {
+  +first_name
+  +last_name
+  +email
+}
+
+class "Django User" as User
+
+OrderForm ..> Order : valida y guarda
+OrderItemForm ..> OrderItem : valida y guarda
+RecordForm ..> Record : valida y guarda
+SignUpForm ..> User : crea usuario
+
+class OrderItemFormSet <<Factory Method result>> {
+  +is_valid()
+  +save()
+}
+
+OrderItemFormSet ..> OrderItemForm : agrupa formularios
+OrderItemFormSet ..> Order : padre
+OrderItemFormSet ..> OrderItem : hijos
+
+note right of OrderForm
+Convencion Django, no GoF:
+el formulario encapsula entrada,
+widgets, errores y validaciones.
+end note
+
+note bottom of OrderItemFormSet
+inlineformset_factory crea esta clase
+configurada para la relacion Order-OrderItem.
+end note
+
+@enduml
