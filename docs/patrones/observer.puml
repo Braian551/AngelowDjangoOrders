@@ -1,0 +1,119 @@
+@startuml
+title Patrón Observer - Historial automático de pedidos
+
+' ============================================================
+' Patrón Observer
+' Django Signals funciona como un sistema de eventos.
+' Cuando Order se guarda, Django emite señales.
+' Las funciones receiver observan esas señales y reaccionan
+' creando historial automático sin duplicar lógica en las vistas.
+' ============================================================
+
+skinparam shadowing false
+skinparam roundcorner 14
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam backgroundColor #FFFFFF
+skinparam sequenceMessageAlign center
+
+skinparam actor {
+  BackgroundColor #DBEAFE
+  BorderColor #2563EB
+  FontColor #0F172A
+}
+
+skinparam participant {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam database {
+  BackgroundColor #DCFCE7
+  BorderColor #15803D
+  FontColor #0F172A
+}
+
+skinparam note {
+  BackgroundColor #FEF3C7
+  BorderColor #F59E0B
+  FontColor #0F172A
+}
+
+actor "Usuario / Admin" as User
+
+participant "Vista, Admin o Shell\n(origen del cambio)" as Client
+participant "Order\nmodels.Model" as Order
+participant "Django Signals\npre_save / post_save" as Signals
+participant "capture_previous_order_state()\nreceiver pre_save" as PreSave
+participant "create_order_status_history()\nreceiver post_save" as PostSave
+database "OrderStatusHistory\nhistorial de cambios" as History
+
+User -> Client : crea o actualiza pedido
+activate Client
+
+Client -> Order : save()
+activate Order
+
+Order -> Signals : emite señal pre_save
+activate Signals
+
+Signals -> PreSave : notifica antes de guardar
+activate PreSave
+
+PreSave -> Order : consulta estado anterior
+PreSave --> Signals : guarda estado previo\nen memoria temporal
+deactivate PreSave
+
+Signals --> Order : continúa guardado
+deactivate Signals
+
+Order -> Signals : emite señal post_save
+activate Signals
+
+Signals -> PostSave : notifica pedido guardado
+activate PostSave
+
+PostSave -> History : crea historial\nsi cambió estado o pago
+activate History
+
+History --> PostSave : historial registrado
+deactivate History
+
+PostSave --> Signals : finaliza reacción
+deactivate PostSave
+
+Signals --> Order : termina evento
+deactivate Signals
+
+Order --> Client : pedido guardado
+deactivate Order
+
+Client --> User : muestra resultado
+deactivate Client
+
+note right of Signals
+Patrón GoF: Observer
+
+Django actúa como sujeto/event bus.
+Las funciones receiver observan eventos
+y reaccionan cuando ocurre un cambio.
+end note
+
+note over PostSave, History
+La auditoría queda desacoplada de las vistas.
+
+Funciona aunque el pedido se actualice desde:
+- vistas del sistema
+- Django Admin
+- shell
+- pruebas automatizadas
+end note
+
+legend bottom
+pre_save = señal antes de guardar.
+post_save = señal después de guardar.
+receiver = función observadora que reacciona al evento.
+endlegend
+
+@enduml

@@ -1,0 +1,68 @@
+@startuml
+title C1 - Diagrama de Contexto - AngeloDjangoOrders
+
+' ============================================================
+' C1 - Diagrama de contexto
+' Muestra el sistema completo desde una vista externa.
+' No incluye detalles internos de Django, Docker, vistas o modelos.
+' ============================================================
+
+top to bottom direction
+
+skinparam shadowing false
+skinparam roundcorner 14
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam backgroundColor #FFFFFF
+
+skinparam actor {
+  BackgroundColor #DBEAFE
+  BorderColor #2563EB
+  FontColor #0F172A
+}
+
+skinparam rectangle {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam database {
+  BackgroundColor #DCFCE7
+  BorderColor #15803D
+  FontColor #0F172A
+}
+
+skinparam note {
+  BackgroundColor #FEF3C7
+  BorderColor #F59E0B
+  FontColor #0F172A
+}
+
+actor "Cliente" as Cliente
+actor "Administrador" as Admin
+
+rectangle "Navegador Web\nInterfaz de acceso" as Browser
+
+rectangle "AngeloDjangoOrders\nSistema web de gestión\nde clientes y pedidos" as Sistema
+
+database "Base de datos MySQL\nclientes" as MySQL
+
+Cliente -down-> Browser : inicia sesión\nconsulta registros
+Admin -down-> Browser : inicia sesión\ngestiona pedidos
+
+Browser -down-> Sistema : usa el sistema\nmediante HTTP
+
+Sistema -down-> MySQL : consulta y almacena\nusuarios, clientes y pedidos
+
+note right of Sistema
+C1 muestra el sistema completo
+y sus actores principales.
+
+En este nivel solo se muestran:
+- Actores externos.
+- Sistema desarrollado.
+- Base de datos principal.
+end note
+
+@enduml

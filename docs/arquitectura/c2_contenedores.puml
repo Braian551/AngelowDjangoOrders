@@ -1,0 +1,85 @@
+@startuml
+title C2 - Diagrama de Contenedores - AngeloDjangoOrders
+
+' ============================================================
+' C2 - Diagrama de contenedores
+' Muestra las partes grandes del sistema:
+' navegador, aplicación Django, base de datos y Docker Compose.
+' ============================================================
+
+left to right direction
+
+skinparam shadowing false
+skinparam roundcorner 14
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam backgroundColor #FFFFFF
+
+skinparam actor {
+  BackgroundColor #DBEAFE
+  BorderColor #2563EB
+  FontColor #0F172A
+}
+
+skinparam rectangle {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam database {
+  BackgroundColor #DCFCE7
+  BorderColor #15803D
+  FontColor #0F172A
+}
+
+skinparam note {
+  BackgroundColor #FEF3C7
+  BorderColor #F59E0B
+  FontColor #0F172A
+}
+
+actor "Usuario\nCliente / Admin" as User
+
+rectangle "Navegador Web\nHTML + CSS + JS\nBootstrap local" as Browser
+
+package "Docker Compose\nangelow" {
+
+  rectangle "Contenedor web\nPython + Django" as Web {
+    rectangle "Proyecto dcrm" as Dcrm
+    rectangle "App website" as Website
+    rectangle "Templates / Static" as Static
+  }
+
+  database "Contenedor db\nMySQL 8.4\nBase: clientes" as DB
+}
+
+rectangle "Variables de entorno\nDJANGO_DB_HOST=db\nDJANGO_DB_NAME=clientes" as Env
+
+rectangle "docker/entrypoint.sh\nmigrate + runserver" as Entrypoint
+
+User --> Browser : usa la interfaz
+Browser --> Web : HTTP\nlocalhost:8000
+
+Web --> DB : ORM Django\nMySQL db:3306
+
+Env --> Web : configuración\nbase de datos
+Entrypoint --> Web : inicia aplicación
+
+note bottom of Web
+El contenedor web ejecuta Django,
+carga plantillas, archivos estáticos
+y procesa las vistas del sistema.
+end note
+
+note bottom of DB
+La base de datos conserva usuarios,
+clientes, pedidos, ítems e historial.
+end note
+
+legend bottom
+C2 muestra los contenedores principales del sistema.
+No detalla clases, vistas ni formularios internos.
+endlegend
+
+@enduml

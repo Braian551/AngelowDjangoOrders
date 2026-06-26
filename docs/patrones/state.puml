@@ -1,0 +1,128 @@
+@startuml
+title Patrón State - Estados simples con choices de Django
+
+' ============================================================
+' Patrón State
+' En este proyecto se aplica de forma simple mediante choices.
+'
+' Importante:
+' No es una implementación GoF estricta con clases de estado
+' separadas. Es una adaptación práctica usando campos de estado
+' permitidos por Django.
+' ============================================================
+
+top to bottom direction
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam roundcorner 14
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam backgroundColor #FFFFFF
+
+skinparam class {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam enum {
+  BackgroundColor #ECFDF5
+  BorderColor #15803D
+  FontColor #0F172A
+}
+
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #CBD5E1
+  FontColor #0F172A
+}
+
+skinparam note {
+  BackgroundColor #FEF3C7
+  BorderColor #F59E0B
+  FontColor #0F172A
+}
+
+package "Entidades con estado" {
+
+  class "Order" as Order {
+    +status
+    +payment_status
+    +change_status(new_status, new_payment_status, note)
+  }
+
+  class "StockReservation" as StockReservation {
+    +status
+    +reserve()
+    +expire()
+    +release()
+  }
+}
+
+package "Estados permitidos" {
+
+  enum "OrderStatus" as OrderStatus {
+    pending
+    processing
+    completed
+    cancelled
+  }
+
+  enum "PaymentStatus" as PaymentStatus {
+    pending
+    paid
+    failed
+    refunded
+  }
+
+  enum "ReservationStatus" as ReservationStatus {
+    reserved
+    expired
+    released
+  }
+}
+
+' =========================
+' Relaciones de estado
+' =========================
+
+Order --> OrderStatus : choices para\nestado del pedido
+Order --> PaymentStatus : choices para\nestado del pago
+
+StockReservation --> ReservationStatus : choices para\nestado de reserva
+
+Order "1" *-- "0..*" StockReservation : reservas de stock
+
+' =========================
+' Notas explicativas
+' =========================
+
+note right of Order
+Inspirado en GoF State
+
+El pedido cambia de fase mediante
+valores permitidos en status y
+payment_status.
+
+No usa clases separadas por estado.
+end note
+
+note right of StockReservation
+La reserva de stock también maneja
+su ciclo de vida mediante estados:
+
+- reserved
+- expired
+- released
+
+Los métodos reserve(), expire()
+y release() controlan esos cambios.
+end note
+
+legend bottom
+State aplicado de forma simple = el comportamiento del objeto depende de su estado actual.
+En Django se representa con campos choices y métodos que controlan los cambios.
+endlegend
+
+@enduml

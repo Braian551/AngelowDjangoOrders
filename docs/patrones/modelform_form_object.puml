@@ -1,0 +1,191 @@
+@startuml
+title Patrón ModelForm / Form Object - Validación antes de persistir
+
+' ============================================================
+' Patrón ModelForm / Form Object
+' Este diagrama muestra cómo los formularios encapsulan:
+' - entrada del usuario
+' - widgets
+' - validaciones
+' - errores
+' - guardado hacia modelos
+'
+' ModelForm es una convención de Django, no un patrón GoF puro.
+' ============================================================
+
+top to bottom direction
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam roundcorner 14
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam backgroundColor #FFFFFF
+
+skinparam class {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #CBD5E1
+  FontColor #0F172A
+}
+
+skinparam note {
+  BackgroundColor #FEF3C7
+  BorderColor #F59E0B
+  FontColor #0F172A
+}
+
+package "Entrada y validación" {
+
+  class "OrderForm" as OrderForm <<ModelForm>> {
+    +clean_order_number()
+    +is_valid()
+    +save()
+  }
+
+  class "OrderItemForm" as OrderItemForm <<ModelForm>> {
+    +clean_quantity()
+    +clean_unit_price()
+    +clean()
+    +is_valid()
+    +save()
+  }
+
+  class "RecordForm" as RecordForm <<ModelForm>> {
+    +first_name
+    +last_name
+    +email
+    +phone_number
+    +address
+    +city
+    +state
+    +zip_code
+    +is_valid()
+    +save()
+  }
+
+  class "SignUpForm" as SignUpForm <<UserCreationForm>> {
+    +email
+    +first_name
+    +last_name
+    +clean_password1()
+    +clean_password2()
+    +is_valid()
+    +save()
+  }
+
+  class "OrderItemFormSet" as OrderItemFormSet <<inlineformset_factory>> {
+    +is_valid()
+    +save()
+  }
+}
+
+package "Modelos de dominio" {
+
+  class "Order" as Order {
+    +order_number
+    +status
+    +payment_status
+    +total
+    +calculate_total()
+    +change_status()
+  }
+
+  class "OrderItem" as OrderItem {
+    +product_name
+    +quantity
+    +unit_price
+    +subtotal
+  }
+
+  class "Record" as Record {
+    +first_name
+    +last_name
+    +email
+    +phone_number
+    +address
+    +city
+    +state
+    +zip_code
+  }
+
+  class "Django User" as User {
+    +username
+    +email
+    +password
+  }
+}
+
+class "Base de datos MySQL\nclientes" as DB <<database>> {
+  +auth_user
+  +website_record
+  +website_order
+  +website_orderitem
+}
+
+' =========================
+' Relaciones formulario-modelo
+' =========================
+
+OrderForm --> Order : valida y guarda\npedido principal
+OrderItemForm --> OrderItem : valida y guarda\nproducto del pedido
+RecordForm --> Record : valida y guarda\nregistro de cliente
+SignUpForm --> User : valida y crea\nusuario
+
+' =========================
+' Relación FormSet
+' =========================
+
+OrderItemFormSet --> OrderItemForm : agrupa varios\nformularios de ítems
+OrderItemFormSet --> Order : recibe pedido padre
+OrderItemFormSet --> OrderItem : crea o actualiza\nítems hijos
+
+' =========================
+' Persistencia
+' =========================
+
+Order --> DB : ORM Django
+OrderItem --> DB : ORM Django
+Record --> DB : ORM Django
+User --> DB : auth_user
+
+' =========================
+' Notas explicativas
+' =========================
+
+note right of OrderForm
+ModelForm / Form Object
+
+El formulario concentra:
+- campos
+- widgets
+- mensajes de error
+- validaciones
+- lógica antes de guardar
+end note
+
+note right of OrderItemFormSet
+Factory Method relacionado
+
+inlineformset_factory genera
+un FormSet configurado para
+la relación Order - OrderItem.
+end note
+
+note bottom of SignUpForm
+SignUpForm extiende UserCreationForm
+para personalizar registro de usuario,
+validaciones y mensajes en español.
+end note
+
+legend bottom
+ModelForm / Form Object = encapsula la entrada del usuario antes de persistir.
+No es GoF puro; es una convención Django aplicada con DRY y validación centralizada.
+endlegend
+
+@enduml

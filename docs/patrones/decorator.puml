@@ -1,0 +1,88 @@
+@startuml
+title Patrón Decorator - Protección de vistas de pedidos
+
+' ============================================================
+' Patrón Decorator
+' Los decoradores agregan responsabilidades a una vista Django
+' sin modificar directamente el cuerpo de la función.
+' ============================================================
+
+top to bottom direction
+
+skinparam shadowing false
+skinparam roundcorner 14
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam backgroundColor #FFFFFF
+
+skinparam actor {
+  BackgroundColor #DBEAFE
+  BorderColor #2563EB
+  FontColor #0F172A
+}
+
+skinparam rectangle {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+  FontColor #0F172A
+}
+
+skinparam database {
+  BackgroundColor #DCFCE7
+  BorderColor #15803D
+  FontColor #0F172A
+}
+
+skinparam note {
+  BackgroundColor #FEF3C7
+  BorderColor #F59E0B
+  FontColor #0F172A
+}
+
+actor "Administrador" as Admin
+
+rectangle "Petición HTTP\n/orders/create/\n/orders/edit/\n/orders/delete/" as Request
+
+package "Cadena de decoradores\naplicada sobre la vista" {
+  rectangle "@never_cache\nEvita usar una página antigua\ndesde la caché del navegador" as NeverCache
+
+  rectangle "@ensure_csrf_cookie\nGarantiza que exista token CSRF\npara formularios protegidos" as Csrf
+
+  rectangle "@login_required\nExige que el usuario\nhaya iniciado sesión" as Login
+
+  rectangle "@user_passes_test(is_admin_user)\nValida que el usuario tenga\nrol de administrador" as Role
+}
+
+rectangle "Vista de pedidos\ncreate_order()\nupdate_order()\ndelete_order()" as View
+
+database "Modelos y formularios\nOrder\nOrderItem\nOrderForm\nOrderItemFormSet" as Models
+
+Admin -down-> Request : realiza acción\nadministrativa
+
+Request -down-> NeverCache : entra a la ruta
+NeverCache -down-> Csrf : agrega control\nde caché
+Csrf -down-> Login : agrega protección\nCSRF
+Login -down-> Role : verifica sesión
+Role -down-> View : autoriza acceso
+View -down-> Models : ejecuta lógica\nde negocio
+
+note right of Login
+Patrón GoF: Decorator
+
+Cada decorador envuelve la vista
+y agrega una responsabilidad nueva
+sin cambiar el cuerpo de la función.
+end note
+
+note right of Role
+La autenticación, autorización,
+CSRF y caché quedan separados
+del flujo principal del negocio.
+end note
+
+legend bottom
+Decorator = agrega comportamiento adicional envolviendo una función u objeto.
+En Django se aplica con decoradores sobre las vistas.
+endlegend
+
+@enduml
