@@ -1,6 +1,7 @@
 name: angelow
 
 services:
+  # Servicio web: construye la imagen local y ejecuta la app Django.
   web:
     build:
       context: .
@@ -8,19 +9,24 @@ services:
     container_name: angelow-web
     command: sh /app/docker/entrypoint.sh
     ports:
+      # Host 8000 -> contenedor 8000 para abrir http://127.0.0.1:8000.
       - "8000:8000"
     environment:
+      # Django lee estas variables desde settings.py para conectar a MySQL.
       DJANGO_DB_NAME: clientes
       DJANGO_DB_USER: angelow
       DJANGO_DB_PASSWORD: angelow_password
       DJANGO_DB_HOST: db
       DJANGO_DB_PORT: 3306
     depends_on:
+      # Evita arrancar Django antes de que MySQL acepte conexiones.
       db:
         condition: service_healthy
     volumes:
+      # Montaje local para desarrollo: cambios en archivos se ven dentro del contenedor.
       - .:/app
 
+  # Servicio de base de datos MySQL usado por Django.
   db:
     image: mysql:8.4
     container_name: angelow-db
@@ -31,10 +37,13 @@ services:
       MYSQL_PASSWORD: angelow_password
       MYSQL_ROOT_PASSWORD: root_password
     ports:
+      # Puerto host 3307 para no chocar con un MySQL local en 3306.
       - "3307:3306"
     volumes:
+      # Volumen persistente para conservar datos aunque se recree el contenedor.
       - angelow_mysql_data:/var/lib/mysql
     healthcheck:
+      # Docker Compose usa esta prueba para saber cuándo la BD está lista.
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "angelow", "-pangelow_password"]
       interval: 10s
       timeout: 5s
@@ -42,4 +51,5 @@ services:
       start_period: 30s
 
 volumes:
+  # Persistencia administrada por Docker para los datos de MySQL.
   angelow_mysql_data:

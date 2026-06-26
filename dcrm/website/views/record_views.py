@@ -1,4 +1,5 @@
-#Crud de records
+"""Vistas para consultar, actualizar y eliminar registros de clientes."""
+
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -9,7 +10,9 @@ from website.models import Record
 def customer_record(request, pk):
     """Muestra el detalle de un cliente solo si el usuario inició sesión."""
     # Estas vistas usan validación manual para conservar el flujo actual del proyecto.
+    # En una evolución futura se podría aplicar el patrón Decorator con login_required.
     if request.user.is_authenticated:
+        # ORM / Active Record: se busca la fila del cliente por su clave primaria.
         customer_record = get_object_or_404(Record, id=pk)
         return render(request, 'record.html', {'customer_record': customer_record})
 
@@ -35,6 +38,7 @@ def update_record(request, pk):
     if request.user.is_authenticated:
         current_record = get_object_or_404(Record, id=pk)
         # request.POST or None permite reutilizar el mismo formulario para GET y POST.
+        # ModelForm / Form Object: RecordForm encapsula validación y guardado.
         form = RecordForm(request.POST or None, instance=current_record)
 
         if form.is_valid():

@@ -2,7 +2,12 @@ from django.db import models
 
 
 class Record(models.Model):
-    """Modelo que guarda la información básica de cada cliente."""
+    """
+    Modelo que guarda la información básica de cada cliente.
+
+    Patrón de persistencia: ORM / Active Record.
+    La clase representa una tabla y cada instancia representa una fila.
+    """
 
     # Fecha y hora en que se crea el registro. Django la asigna automáticamente.
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,10 +1,12 @@
-# Framework principal compatible con Python 3.14 y MariaDB/MySQL
+# Framework principal del backend web.
 Django==5.2.8
 
-# Conector de base de datos para MariaDB/MySQL (requiere compilador C)
+# Conector de base de datos para MariaDB/MySQL.
 PyMySQL==1.1.2
-cryptography==46.0.3 # cryptography es para el cifrado de datos 
 
-# Utilidades opcionales pero recomendadas
+# Requerido por el cliente MySQL cuando usa autenticación segura.
+cryptography==46.0.3
+
+# Utilidades de entorno y SQL usadas por Django y herramientas del proyecto.
 python-dotenv==1.0.1
-sqlparse==0.4.4 # sqlparse es para el parser de SQL, que se utiliza en la administración de Django y en algunas operaciones de migración.
+sqlparse==0.4.4

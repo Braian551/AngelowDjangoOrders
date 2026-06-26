@@ -3,6 +3,9 @@ from django.core.paginator import Paginator
 from website.models import Record
 
 
+# Patrón GoF de comportamiento: Strategy.
+# Estas funciones encapsulan reglas de rol y redirección para que las vistas
+# no repitan condiciones como `is_staff or is_superuser`.
 def is_admin_user(user):
     """
     Verifica si el usuario tiene rol de administrador.
@@ -37,6 +40,7 @@ def paginate_records(request):
     Se ordenan del más reciente al más antiguo para mostrar primero
     los registros nuevos.
     """
+    # ORM / Active Record: Django traduce esta consulta a SQL sin escribirlo a mano.
     records_list = Record.objects.all().order_by('-created_at')
 
     # Ocho registros por página mantiene la tabla legible.

@@ -8,6 +8,8 @@ from website.forms import SignUpForm
 from .helpers import get_login_redirect_url, paginate_records
 
 
+# Arquitectura Django MTV:
+# estas vistas reciben HTTP, delegan validación o consultas y renderizan templates.
 @never_cache
 def home(request):
     """
@@ -60,6 +62,7 @@ def login_user(request):
 
             messages.success(request, 'Ingresaste exitosamente.')
 
+            # Patrón Strategy: la regla de redirección por rol vive en helpers.py.
             # Redirección por rol:
             # Admin va a orders.
             # Cliente va a home.
@@ -94,6 +97,7 @@ def register_user(request):
     Para que sean Admin, se les debe activar is_staff o is_superuser.
     """
     if request.method == 'POST':
+        # ModelForm / Form Object: SignUpForm valida y crea el usuario.
         form = SignUpForm(request.POST)
 
         if form.is_valid():

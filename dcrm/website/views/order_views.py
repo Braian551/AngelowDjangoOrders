@@ -12,7 +12,12 @@ from .helpers import is_admin_user
 # Arquitectura Django MTV:
 # las vistas coordinan modelos, formularios y plantillas sin guardar HTML ni SQL directo.
 def sync_stock_reservations(order):
-    """Sincroniza las reservas de stock según los items actuales del pedido."""
+    """
+    Sincroniza las reservas de stock según los items actuales del pedido.
+
+    Función auxiliar usada por la fachada de pedidos: mantiene las reservas
+    alineadas con los productos guardados.
+    """
     # Cada ítem debe tener una reserva asociada para mantener trazabilidad del stock.
     for item in order.items.all():
         StockReservation.objects.update_or_create(
@@ -36,7 +41,7 @@ def record_order_view(order, user):
 # Patrón GoF estructural: Decorator.
 # login_required valida sesión y user_passes_test agrega la autorización de rol Admin.
 @login_required(login_url='home')
-@user_passes_test(is_admin_user, login_url='home')
+@user_passes_test(is_admin_user, login_url='home') #strategy
 def list_orders(request):
     """Muestra el listado de pedidos."""
     # prefetch_related evita consultas repetidas al mostrar los items de cada pedido.
@@ -52,6 +57,9 @@ def list_orders(request):
 @user_passes_test(is_admin_user, login_url='home')
 def create_order(request):
     """Crea un pedido junto con sus items."""
+    # Patrón Facade:
+    # la vista ofrece una acción simple al usuario y coordina internamente
+    # formulario, formset, modelos, reservas, total, mensajes y redirección.
     # Patrón web Post/Redirect/Get: si el POST es válido, se redirige para evitar reenvíos.
     if request.method == 'POST':
         form = OrderForm(request.POST)
@@ -94,6 +102,8 @@ def create_order(request):
 @user_passes_test(is_admin_user, login_url='home')
 def update_order(request, order_id):
     """Actualiza un pedido existente y sus items."""
+    # Patrón Facade aplicado a edición:
+    # una sola vista orquesta carga, validación, guardado, stock y total.
     # La vista actúa como coordinadora: carga modelo, valida formularios y renderiza template.
     order = get_object_or_404(Order, pk=order_id)
 
@@ -138,6 +148,8 @@ def update_order(request, order_id):
 @user_passes_test(is_admin_user, login_url='home')
 def delete_order(request, order_id):
     """Elimina un pedido después de confirmarlo."""
+    # Patrón Facade aplicado a eliminación:
+    # la vista reúne confirmación, auditoría de visualización, borrado y mensaje final.
     # Separar GET de POST aplica confirmación explícita antes de ejecutar una acción destructiva.
     order = get_object_or_404(Order, pk=order_id)
 

@@ -2,6 +2,8 @@ from django.urls import path
 
 from . import views
 
+# Mapa de rutas de la app website.
+# Cada path conecta una URL pública con una vista del patrón MTV de Django.
 urlpatterns = [
     # Página principal.
     path('', views.home, name='home'),

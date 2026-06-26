@@ -1,18 +1,22 @@
-{%extends 'base.html'%}
+{% extends 'base.html' %}
+
 {% block content %}
 
-
 <div class="container my-5">
-    <h1 class="display-4 fw-bold">Actualizar registro </h1>
-    <br/>
+    <h1 class="display-4 fw-bold">Actualizar registro</h1>
+
     {# El formulario reutiliza RecordForm con la instancia actual del cliente. #}
-    <form method="post" action="">
+    <form method="post" action="" novalidate>
         {% csrf_token %}
 
-
+        {# ModelForm / Form Object: Django renderiza campos y errores ya validados. #}
         {{ form.as_p }}
-        <br/>
-        <button type="submit" class="btn btn-primary">Actualizar</button>
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+        </div>
+    </form>
 </div>
-{%endblock%}
+
+{% endblock %}

@@ -3,6 +3,9 @@
 from django.db import migrations, models
 
 
+# Migración inicial:
+# crea la tabla de clientes usada por el modelo Record.
+# Las migraciones son historial de esquema; no contienen lógica de negocio.
 class Migration(migrations.Migration):
 
     initial = True
@@ -11,6 +14,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # Tabla principal de clientes/records.
         migrations.CreateModel(
             name='Record',
             fields=[

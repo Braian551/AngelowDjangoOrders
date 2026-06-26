@@ -5,7 +5,13 @@ from django.db import models
 
 
 class Order(models.Model):
-    """Modelo para representar un pedido dentro del sistema."""
+    """
+    Modelo para representar un pedido dentro del sistema.
+
+    Patrones presentes:
+    - ORM / Active Record: el modelo representa una tabla y contiene lógica cercana al dato.
+    - State aplicado: `status` y `payment_status` limitan fases mediante choices.
+    """
 
     # Relacionado con State del catálogo GoF: el pedido cambia de fase por estado.
     # Aquí se usa una implementación simple con choices, no clases de estado separadas.
@@ -110,7 +116,12 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    """Modelo para representar un producto dentro de un pedido."""
+    """
+    Modelo para representar un producto dentro de un pedido.
+
+    ORM / Active Record: guarda los datos del producto y calcula su subtotal
+    como regla de dominio cercana al dato.
+    """
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product_name = models.CharField(max_length=100)
@@ -132,7 +143,12 @@ class OrderItem(models.Model):
 
 
 class OrderStatusHistory(models.Model):
-    """Modelo para registrar cada cambio de estado de un pedido."""
+    """
+    Modelo para registrar cada cambio de estado de un pedido.
+
+    Se alimenta principalmente desde el patrón Observer implementado en
+    `signals.py`, lo que desacopla la auditoría de las vistas.
+    """
 
     # Bitácora de auditoría: conserva cambios sin sobrescribir datos anteriores.
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='status_history')
@@ -158,7 +174,12 @@ class OrderStatusHistory(models.Model):
 
 
 class StockReservation(models.Model):
-    """Modelo para representar una reserva de stock asociada a un ítem."""
+    """
+    Modelo para representar una reserva de stock asociada a un ítem.
+
+    State aplicado: `status` y los métodos reserve/expire/release modelan
+    el ciclo de vida simple de una reserva.
+    """
 
     # Estado de reserva: implementación simple relacionada con State mediante choices.
     STATUS_RESERVED = 'reserved'
@@ -215,7 +236,11 @@ class StockReservation(models.Model):
 
 
 class OrderView(models.Model):
-    """Modelo para registrar cuándo y por quién fue visto un pedido."""
+    """
+    Modelo para registrar cuándo y por quién fue visto un pedido.
+
+    Es una bitácora ligera de auditoría de lectura.
+    """
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='view_logs')
     viewed_by = models.CharField(max_length=150, blank=True)

@@ -1,14 +1,15 @@
 <nav class="navbar navbar-expand-lg navbar-dark angelow-navbar">
   <div class="container-fluid">
     <a class="navbar-brand angelow-brand" href="{% url 'home' %}">Angelow</a>
-    {# Menu hamburguesa responsive: en movil abre el panel de navegacion. #}
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#angelowMainMenu" aria-controls="angelowMainMenu" aria-expanded="false" aria-label="Abrir menu">
+
+    {# Menú hamburguesa responsive: en móvil abre el panel de navegación. #}
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#angelowMainMenu" aria-controls="angelowMainMenu" aria-expanded="false" aria-label="Abrir menú">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="angelowMainMenu">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0 angelow-menu">
-        {# La navegacion cambia segun exista una sesion activa y usa dropdown para variar el menu. #}
+        {# La navegación cambia según exista una sesión activa y usa dropdown para variar el menú. #}
         {% if user.is_authenticated %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'home' %}">Dashboard</a>
@@ -17,7 +18,7 @@
         {% if user.is_staff or user.is_superuser %}
         <li class="nav-item dropdown angelow-mega-item">
           <a class="nav-link dropdown-toggle" href="#" id="angelowOperationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Gestion
+            Gestión
           </a>
           <div class="dropdown-menu angelow-mega-menu" aria-labelledby="angelowOperationsDropdown">
             <div class="angelow-mega-grid">
@@ -46,12 +47,12 @@
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="angelowAccountDropdown">
             <li><span class="dropdown-item-text">{{ user.username }}</span></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesion</a></li>
+            <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesión</a></li>
           </ul>
         </li>
         {% else %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'login' %}">Iniciar sesion</a>
+          <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'register' %}">Registrar</a>

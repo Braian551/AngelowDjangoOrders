@@ -12,6 +12,10 @@ class WebsiteConfig(AppConfig):
         """
         Carga las señales de la app cuando Django inicia.
 
+        Patrón Observer:
+        al importar `website.signals`, Django registra receivers que observan
+        `pre_save` y `post_save` del modelo Order.
+
         Esto permite que signals.py escuche eventos como:
         - antes de guardar un pedido
         - después de guardar un pedido

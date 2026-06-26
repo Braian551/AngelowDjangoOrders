@@ -7,6 +7,7 @@ from django.forms import inlineformset_factory
 from website.models import Order, OrderItem
 
 
+# Validadores reutilizables: separan reglas de formato de las vistas.
 order_number_validator = RegexValidator(
     regex=r'^[A-Za-z0-9-]+$',
     message='El número de pedido solo puede contener letras, números y guion.',
@@ -22,7 +23,7 @@ class OrderForm(forms.ModelForm):
     """
     Formulario principal para crear o actualizar un pedido.
 
-    Convención Django: ModelForm.
+    Convención Django: ModelForm / Form Object.
     No es un patrón GoF del catálogo, pero Django lo usa para crear formularios
     desde modelos y concentrar validación de entrada.
 
@@ -92,7 +93,13 @@ class OrderForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        """Agrega validación regex al número de pedido sin duplicarla en la vista."""
+        """
+        Agrega validación regex al número de pedido sin duplicarla en la vista.
+
+        Template Method de Django Forms:
+        el framework ejecuta inicialización y validación; este método adapta
+        un punto específico del algoritmo.
+        """
         super().__init__(*args, **kwargs)
         self.fields['order_number'].validators.append(order_number_validator)
 
@@ -114,6 +121,7 @@ class OrderForm(forms.ModelForm):
             raise forms.ValidationError('Ya existe un pedido con ese número.')
 
         return order_number
+
 
 class OrderItemForm(forms.ModelForm):
     """
@@ -283,6 +291,10 @@ class OrderItemForm(forms.ModelForm):
         return cleaned_data
 
 
+# Factory Method aplicado mediante Django:
+# inlineformset_factory construye la clase de formset sin que la vista conozca
+# los detalles internos de la relación padre-hijo.
+#
 # Convención Django: FormSet.
 # No pertenece al catálogo GoF; agrupa formularios hijos para una relación uno-a-muchos.
 # FormSet para manejar varios OrderItem dentro de un mismo Order.

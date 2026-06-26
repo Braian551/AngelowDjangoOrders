@@ -1,5 +1,8 @@
 /*
     Estilos exclusivos del dashboard home.html.
+
+    La tabla se convierte en tarjetas en móvil usando `data-label`
+    para conservar legibilidad sin duplicar markup.
 */
 
 :root {

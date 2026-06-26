@@ -5,6 +5,9 @@ from decimal import Decimal
 from django.db import migrations, models
 
 
+# Segunda migración del dominio de pedidos:
+# agrega pedidos, ítems, historial de estado, reservas de stock y bitácora de vistas.
+# Refleja en base de datos los modelos donde aparecen State, Observer y ORM.
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -12,6 +15,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # Pedido principal: concentra estado, pago y total calculado.
         migrations.CreateModel(
             name='Order',
             fields=[
@@ -29,6 +33,7 @@ class Migration(migrations.Migration):
                 'ordering': ['-created_at'],
             },
         ),
+        # Ítems hijos del pedido. La relación se maneja con inline formsets.
         migrations.CreateModel(
             name='OrderItem',
             fields=[
@@ -43,6 +48,7 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Ítems de pedido',
             },
         ),
+        # Historial auditado por las señales del patrón Observer.
         migrations.CreateModel(
             name='OrderStatusHistory',
             fields=[
@@ -61,6 +67,7 @@ class Migration(migrations.Migration):
                 'ordering': ['-changed_at'],
             },
         ),
+        # Registro simple de visualizaciones de pedidos.
         migrations.CreateModel(
             name='OrderView',
             fields=[
@@ -75,6 +82,7 @@ class Migration(migrations.Migration):
                 'ordering': ['-viewed_at'],
             },
         ),
+        # Reserva de stock asociada uno-a-uno con cada ítem del pedido.
         migrations.CreateModel(
             name='StockReservation',
             fields=[

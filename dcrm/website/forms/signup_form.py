@@ -1,4 +1,9 @@
-# Formulario de registro
+"""Formulario de registro de usuarios.
+
+Patrón/convenio Django: Form Object.
+El formulario valida entrada, personaliza widgets y evita que la vista tenga
+que conocer reglas de contraseña, mensajes y etiquetas.
+"""
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
@@ -28,6 +33,10 @@ class SignUpForm(UserCreationForm):
 
     Centraliza etiquetas y mensajes en español para evitar errores genéricos
     como "This field is required." en las pantallas de autenticación.
+
+    Template Method aplicado por Django Forms:
+    `is_valid()` ejecuta el flujo general y este formulario personaliza
+    pasos concretos con `clean_password1()` y `clean_password2()`.
     """
 
     # Campos adicionales al formulario base de Django para completar el perfil inicial.

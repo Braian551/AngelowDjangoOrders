@@ -1,0 +1,3 @@
+-- Archivo reservado para consultas SQL manuales de apoyo.
+-- La aplicación no lo ejecuta; la persistencia real se gestiona con el ORM
+-- y las migraciones de Django.

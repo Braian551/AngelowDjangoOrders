@@ -313,15 +313,6 @@
     background: var(--primary-dark);
 }
 
-/* Texto de ayuda del formulario de registro. */
-.form-help {
-    display: block;
-    margin-top: 0.45rem;
-    color: var(--muted);
-    font-size: 0.82rem;
-    line-height: 1.5;
-}
-
 /* Lista de errores del registro. */
 .auth-errors {
     margin: 0.75rem 0 0;

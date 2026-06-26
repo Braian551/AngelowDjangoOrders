@@ -37,7 +37,7 @@ El proyecto implementa autenticación, roles administrativos, formularios valida
 
 ## Descripción
 
-AngelowDjangoOrders es una aplicación web construida con Django para administrar clientes y pedidos. El sistema separa responsabilidades por módulos: modelos para datos y reglas de dominio, formularios para validación de entrada, vistas para coordinar el flujo HTTP y plantillas para la interfaz.
+Angelow es una aplicación web construida con Django para administrar clientes y pedidos. El sistema separa responsabilidades por módulos: modelos para datos y reglas de dominio, formularios para validación de entrada, vistas para coordinar el flujo HTTP y plantillas para la interfaz.
 
 El módulo de pedidos permite crear, editar, listar y eliminar pedidos con múltiples productos. Cada pedido calcula su total desde sus ítems, sincroniza reservas de stock y registra historial cuando cambian el estado del pedido o el estado de pago.
 
@@ -830,4 +830,4 @@ AngelowDjangoOrders/
 
 ## Licencia
 
-Proyecto académico. Agrega una licencia explícita si el repositorio será publicado para uso externo o colaborativo.
+Proyecto académico.

@@ -1,4 +1,8 @@
-#
+"""Formulario para datos de clientes.
+
+Patrón/convenio Django: ModelForm / Form Object.
+Centraliza validaciones de entrada y renderizado básico de widgets Bootstrap.
+"""
 
 from django import forms
 from django.core.validators import RegexValidator
@@ -28,7 +32,12 @@ zip_code_validator = RegexValidator(
 
 
 class RecordForm(forms.ModelForm):
-    """Formulario para crear o actualizar la información de un cliente."""
+    """
+    Formulario para crear o actualizar la información de un cliente.
+
+    La vista solo pregunta si el formulario es válido; las reglas de campos
+    y mensajes viven aquí para reducir duplicación.
+    """
 
     # Se declaran los campos para controlar placeholders y clases Bootstrap desde Python.
     first_name = forms.CharField(

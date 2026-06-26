@@ -3,6 +3,9 @@
 
     Este archivo se carga desde base.html.
     Aquí colocamos estilos compartidos por todas las páginas.
+
+    Mantener estilos comunes aquí evita repetir reglas en home.css,
+    auth.css y orders.css.
 */
 
 :root {
