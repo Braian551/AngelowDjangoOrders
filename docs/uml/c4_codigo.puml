@@ -1,0 +1,229 @@
+@startuml
+title C4 - Diagrama de Código - Clases y funciones principales
+
+left to right direction
+skinparam shadowing false
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam nodesep 60
+skinparam ranksep 50
+
+skinparam class {
+BackgroundColor White
+BorderColor Black
+ArrowColor Black
+}
+
+package "Modelos" {
+class Record <<Model>> {
++created_at
++first_name
++last_name
++email
++phone_number
++address
++city
++state
++zip_code
+--
++str()
+}
+
+class Order <<Model>> {
++order_number
++status
++payment_status
++total
++created_at
++updated_at
+--
++calculate_total()
++change_status()
++str()
+}
+
+class OrderItem <<Model>> {
++product_name
++quantity
++unit_price
++subtotal
+--
++str()
+}
+
+class OrderStatusHistory <<Model>> {
++previous_status
++new_status
++previous_payment_status
++new_payment_status
++note
++changed_at
+--
++str()
+}
+
+class StockReservation <<Model>> {
++product_name
++quantity
++status
+--
++reserve()
++expire()
++release()
++str()
+}
+
+class OrderView <<Model>> {
++viewed_by
++viewed_at
+--
++str()
+}
+}
+
+package "Formularios" {
+class SignUpForm <<Form>> {
++email
++first_name
++last_name
+--
++clean_password1()
++clean_password2()
+}
+
+class RecordForm <<ModelForm>> {
++first_name
++last_name
++email
++phone_number
++address
++city
++state
++zip_code
+}
+
+class OrderForm <<ModelForm>> {
+--
++clean_order_number()
+}
+
+class OrderItemForm <<ModelForm>> {
+--
++clean_quantity()
++clean_unit_price()
++clean()
+}
+
+class OrderItemFormSet <<inlineformset_factory>>
+}
+
+package "Vistas y helpers" {
+class AuthViews <<module>> {
++home()
++login_user()
++logout_user()
++register_user()
++csrf_failure()
+}
+
+class RecordViews <<module>> {
++customer_record()
++delete_record()
++update_record()
+}
+
+class OrderViews <<module>> {
++sync_stock_reservations()
++record_order_view()
++list_orders()
++create_order()
++update_order()
++delete_order()
+}
+
+class Helpers <<module>> {
++is_admin_user()
++get_login_redirect_url()
++paginate_records()
+}
+
+class OrderSignals <<module>> {
++capture_previous_order_state()
++create_order_status_history()
+}
+
+class WebsiteConfig <<AppConfig>> {
++ready()
+}
+}
+
+class "Django User" as DjangoUser <<External>>
+
+Order "1" -- "0.." OrderItem : items
+Order "1" o-- "0.." OrderStatusHistory : status_history
+Order "1" -- "0.." StockReservation : stock_reservations
+Order "1" --> "0.." OrderView : view_logs
+OrderItem "1" --> "0..1" StockReservation : stock_reservation
+
+RecordForm ..> Record : ModelForm de
+OrderForm ..> Order : ModelForm de
+OrderItemForm ..> OrderItem : ModelForm de
+OrderItemFormSet ..> OrderItemForm : agrupa
+SignUpForm ..> DjangoUser : crea usuario
+
+AuthViews ..> SignUpForm : usa
+AuthViews ..> Helpers : usa
+AuthViews ..> Record : consulta
+
+RecordViews ..> RecordForm : usa
+RecordViews ..> Record : gestiona
+
+OrderViews ..> OrderForm : usa
+OrderViews ..> OrderItemFormSet : usa
+OrderViews ..> Order : gestiona
+OrderViews ..> OrderItem : gestiona items
+OrderViews ..> StockReservation : sincroniza
+OrderViews ..> OrderView : registra vistas
+OrderViews ..> Helpers : usa
+
+WebsiteConfig ..> OrderSignals : importa al iniciar
+OrderSignals ..> Order : pre_save / post_save
+OrderSignals ..> OrderStatusHistory : crea historial
+
+note right of Order
+Relacionado con State:
+status y payment_status representan
+fases del pedido mediante choices.
+end note
+
+note right of StockReservation
+Relacionado con State:
+reserved, expired y released
+representan fases de la reserva.
+end note
+
+note bottom of OrderSignals
+Patrón GoF: Observer.
+Django emite eventos y signals.py
+reacciona creando historial.
+end note
+
+note bottom of OrderViews
+Patrón GoF: Decorator.
+login_required y user_passes_test
+agregan autenticación y autorización.
+end note
+
+Record -[hidden]down- Order
+Order -[hidden]right- OrderStatusHistory
+OrderItem -[hidden]down- StockReservation
+AuthViews -[hidden]down- RecordViews
+RecordViews -[hidden]down- OrderViews
+SignUpForm -[hidden]right- RecordForm
+RecordForm -[hidden]right- OrderForm
+OrderForm -[hidden]down- OrderItemForm
+OrderSignals -[hidden]down- WebsiteConfig
+
+@enduml

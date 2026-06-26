@@ -1,4 +1,4 @@
-#git attributes es para que git no confunda con los archivos de texto
+#git attributes es para que git no confunda con los archivos de texto 
 *.sh text eol=lf 
 *.yml text eol=lf
 *.yaml text eol=lf

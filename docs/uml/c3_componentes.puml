@@ -1,0 +1,81 @@
+@startuml
+title C3 - Diagrama de Componentes - App website
+
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam componentStyle rectangle
+
+actor "Cliente" as Cliente
+actor "Administrador" as Admin
+database "MySQL\nclientes" as DB
+
+package "website/" {
+  component "urls.py\nURL routing" as Urls
+  component "views/auth_views.py\nhome, login, logout, registro" as AuthViews
+  component "views/record_views.py\nCRUD de clientes" as RecordViews
+  component "views/order_views.py\nCRUD de pedidos" as OrderViews
+  component "views/helpers.py\nroles, redireccion, paginacion" as Helpers
+  component "forms/signup_form.py\nSignUpForm" as SignupForm
+  component "forms/record_form.py\nRecordForm" as RecordForm
+  component "forms/order_form.py\nOrderForm, OrderItemFormSet" as OrderForms
+  component "models/record.py\nRecord" as RecordModel
+  component "models/order.py\nOrder, items, historial, stock" as OrderModels
+  component "signals.py\nObserver de cambios de pedido" as Signals
+  component "templates/\nHTML Django" as Templates
+  component "templates/static/\nCSS, JS, Bootstrap local" as Static
+  component "admin.py\nDjango Admin" as AdminSite
+  component "apps.py\nWebsiteConfig.ready()" as Apps
+  component "tests.py\nPruebas de regresion" as Tests
+}
+
+Cliente --> Urls : navega
+Admin --> Urls : administra
+Urls --> AuthViews
+Urls --> RecordViews
+Urls --> OrderViews
+
+AuthViews --> SignupForm
+AuthViews --> Helpers
+AuthViews --> Templates
+AuthViews --> RecordModel : dashboard paginado
+
+RecordViews --> RecordForm
+RecordViews --> RecordModel
+RecordViews --> Templates
+
+OrderViews --> OrderForms
+OrderViews --> OrderModels
+OrderViews --> Helpers : is_admin_user
+OrderViews --> Templates
+
+Apps --> Signals : registra receptores
+Signals --> OrderModels : observa Order
+Signals --> OrderModels : crea OrderStatusHistory
+
+AdminSite --> RecordModel
+AdminSite --> OrderModels
+Templates --> Static
+
+RecordModel --> DB : ORM
+OrderModels --> DB : ORM
+SignupForm --> DB : User Django
+Tests ..> Urls
+Tests ..> AuthViews
+Tests ..> OrderForms
+Tests ..> RecordForm
+
+note right of OrderViews
+Patron GoF: Decorator.
+login_required y user_passes_test
+protegen las vistas administrativas.
+end note
+
+note bottom of Signals
+Patron GoF: Observer.
+pre_save y post_save generan historial
+sin duplicar logica en cada vista.
+end note
+
+@enduml

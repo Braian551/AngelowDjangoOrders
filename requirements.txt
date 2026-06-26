@@ -3,8 +3,8 @@ Django==5.2.8
 
 # Conector de base de datos para MariaDB/MySQL (requiere compilador C)
 PyMySQL==1.1.2
-cryptography==46.0.3
+cryptography==46.0.3 # cryptography es para el cifrado de datos 
 
 # Utilidades opcionales pero recomendadas
 python-dotenv==1.0.1
-sqlparse==0.4.4
+sqlparse==0.4.4 # sqlparse es para el parser de SQL, que se utiliza en la administración de Django y en algunas operaciones de migración.
